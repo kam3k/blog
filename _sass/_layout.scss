@@ -1,0 +1,94 @@
+@charset "utf-8";
+main {
+    max-width: 48rem;
+    margin: 0 auto 3rem;
+    padding: 0 2rem;
+}
+.site-header {
+    .site-title {
+        font-weight: 300;
+        > a {
+            color: $text-color;
+            text-decoration: none;
+        }
+    }
+    .site-nav {
+        > a {
+            color: $text-color;
+            &:hover {
+                text-decoration: none;
+            }
+            &.active {
+                border-bottom: 2px solid #666;
+            }
+            + a {
+                margin-left: 1rem;
+            }
+        }
+    }
+}
+
+.site-footer {
+    font-size: 80%;
+    color: #666;
+    border-top: 4px solid #eee;
+    margin-top: 2em;
+    overflow: hidden;
+  }
+
+    .site-footer .contact {
+      float: left;
+      margin-right: 3em;
+    }
+
+    .site-footer .contact a {
+      color: #8085C1;
+    }
+
+    .site-footer .rss {
+      margin-top: 1.1em;
+      margin-right: -.2em;
+      float: right;
+    }
+
+    .site-footer .rss img {
+      border: 0;
+    }
+
+.posts {
+    list-style: none;
+    padding: 0;
+    > li {
+        line-height: 1.75;
+        span {
+            color: $meta-color;
+            margin-right: 1.5rem;
+            font-size: $small-font-size;
+        }
+        a {
+            color: $text-color;
+            text-decoration: none;
+        }
+    }
+}
+.post {
+    position: relative;
+    .post-header {
+        text-align: center;
+        margin-bottom: 0;
+    }
+    .post-meta {
+        margin: 0;
+        text-align: center;
+        color: $meta-color;
+        font-size: $small-font-size;
+    }
+}
+@media screen and (max-width: 48rem) {
+    .site-header {
+        .site-title,
+        .site-nav {
+            text-align: center;
+        }
+    }
+}

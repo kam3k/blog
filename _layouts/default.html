@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ site.baseurl }}/css/main.css">
+    <title>{{ site.title }}</title>
+</head>
+<body>
+    <main>
+        <header class="site-header">
+            <h1 class="site-title"><a href="{{ site.baseurl }}/">{{ site.title }}</a></h1>
+            <nav class="site-nav">
+                <a href="{{ site.baseurl }}/" class="{% if page.url == '/home/' %}active{% endif %}">Home</a>
+                <a href="{{ site.baseurl }}/about/" class="{% if page.url == '/about/' %}active{% endif %}">About</a>
+                <a href="{{ site.baseurl }}/work/" class="{% if page.url == '/work/' %}active{% endif %}">Work</a>
+                <a href="{{ site.baseurl }}/cv/" class="{% if page.url == '/cv/' %}active{% endif %}">CV</a>
+                <a href="{{ site.baseurl }}/contact/" class="{% if page.url == '/contact/' %}active{% endif %}">Contact</a>
+            </nav>
+        </header>
+        {{ content }}
+
+    <div class="site-footer">
+        <div class="contact">
+          <p>
+            Marc Gallant
+            <br />
+            PhD candidate at
+              <a href="https://msl.engineering.queensu.ca/">MSL</a>
+            <br />
+            m.gallant@queensu.ca
+            <br />
+            <a href="{{ site.baseurl }}/license/" class="{% if page.url == '/license/' %}active{% endif %}">License</a>
+          </p>
+        </div>
+        <div class="contact">
+          <p>
+            <a href="http://github.com/kam3k/">GitHub</a><br />
+            <a href="http://twitter.com/marcjgallant/">Twitter</a><br />
+            <a href="http://ca.linkedin.com/in/marcjgallant">LinkedIn</a><br />
+          </p>
+        </div>
+      </div>
+    </main>
+
+
+    {% if site.google_analytics %}
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', '{{ site.google_analytics }}', 'auto');
+        ga('send', 'pageview');
+    </script>
+    {% endif %}
+</body>
+</html>
