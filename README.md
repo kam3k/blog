@@ -1,4 +1,1 @@
-marcgallant
----------
-
 My personal blog.
