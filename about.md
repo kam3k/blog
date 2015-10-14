@@ -12,3 +12,4 @@ My name is Marc Gallant. I am a PhD candidate at [Queen's University](www.queens
 
 The quote at the top of the page is fortunately not self-referential; rather, it is from [one of my favourite movies](http://www.imdb.com/title/tt0128445/). I love playing badminton, shooting darts, drinking craft beer, [trading wool](https://en.wikipedia.org/wiki/Catan), reading science fiction, and [the Oxford comma](https://en.wikipedia.org/wiki/Serial_comma). I am happily married and my wife and I currently expecting our first child and second dog.
 
+I encourage you to check some of [my projects](https://github.com/kam3k), read my [CV](../cv), follow me on [Twitter](https://twitter.com/marcjgallant), or view my [LinkedIn profile](http://ca.linkedin.com/in/marcjgallant). You can contact me at `m.gallant@queensu.ca`.
