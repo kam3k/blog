@@ -79,7 +79,7 @@ I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing o
 
 * Co-authored several conference papers and internal technical publications
 
-# Skills and qualifications
+# Skills & qualifications
 
 **Technical**
 
@@ -103,7 +103,7 @@ I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing o
 
 * Everyday experience working with Git, Point Cloud Library (PCL), Robot Operating System (ROS), and various other software and frameworks
 
-* Experience programming in Windows, Linux and Mac OS X
+* Experience programming in Windows, Linux, and Mac OS X
 
 # Honours & awards
 
