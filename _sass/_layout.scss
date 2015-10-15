@@ -40,22 +40,25 @@ main {
 
     .site-footer .contact {
       float: left;
-      margin-right: 3em;
+      width: 33%;
     }
 
     .site-footer .contact a {
       color: #8085C1;
     }
 
-    .site-footer .rss {
-      margin-top: 1.1em;
-      margin-right: -.2em;
-      float: right;
+    .site-footer .quote {
+        float: center;
+        display: inline-block;
+        width: 33%;
     }
 
-    .site-footer .rss img {
-      border: 0;
+    .site-footer .links {
+        float: right;
+        width: 33%;
+        text-align: right;
     }
+
 
 .posts {
     list-style: none;
@@ -98,5 +101,9 @@ main {
 .blog-excerpt-headers {
     margin-top: 0px;
     margin-bottom: 0px;
+}
+
+.fa-black {
+    color: black;
 }
 
