@@ -6,6 +6,7 @@ main {
 }
 .site-header {
     .site-title {
+        display: inline;
         font-weight: 300;
         > a {
             color: $text-color;
@@ -13,6 +14,7 @@ main {
         }
     }
     .site-nav {
+        display: inline;
         > a {
             color: $text-color;
             &:hover {
