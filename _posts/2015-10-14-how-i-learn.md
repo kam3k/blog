@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  How I learn
+comments: true
 date:   2015-10-14
 ---
 
