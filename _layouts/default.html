@@ -9,22 +9,6 @@
         src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
     </script>
 
-    {% if page.comments %}
-    <div id="disqus_thread"></div>
-    <script type="text/javascript">
-        /* * * CONFIGURATION VARIABLES * * */
-        var disqus_shortname = 'marcgallant';
-        
-        /* * * DON'T EDIT BELOW THIS LINE * * */
-        (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-    </script>
-    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
-    {% endif %}
-
 </head>
 <body>
     <main>
@@ -38,27 +22,43 @@
         </header>
         {{ content }}
 
-    <div class="site-footer">
-        <div class="contact">
-          <p>
-            Marc Gallant
-            <br />
-            PhD candidate at
-              <a href="https://msl.engineering.queensu.ca/">MSL</a>
-            <br />
-            m.gallant@queensu.ca
-            <br />
-            <a href="{{ site.baseurl }}/license/" class="{% if page.url == '/license/' %}active{% endif %}">License</a>
-          </p>
+        {% if page.comments %}
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES * * */
+            var disqus_shortname = 'marcgallant';
+            
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+        {% endif %}
+
+        <div class="site-footer">
+            <div class="contact">
+              <p>
+                Marc Gallant
+                <br />
+                PhD candidate at
+                  <a href="https://msl.engineering.queensu.ca/">MSL</a>
+                <br />
+                m.gallant@queensu.ca
+                <br />
+                <a href="{{ site.baseurl }}/license/" class="{% if page.url == '/license/' %}active{% endif %}">License</a>
+              </p>
+            </div>
+            <div class="contact">
+              <p>
+                <a href="http://github.com/kam3k/">GitHub</a><br />
+                <a href="http://twitter.com/marcjgallant/">Twitter</a><br />
+                <a href="http://ca.linkedin.com/in/marcjgallant">LinkedIn</a><br />
+              </p>
+            </div>
         </div>
-        <div class="contact">
-          <p>
-            <a href="http://github.com/kam3k/">GitHub</a><br />
-            <a href="http://twitter.com/marcjgallant/">Twitter</a><br />
-            <a href="http://ca.linkedin.com/in/marcjgallant">LinkedIn</a><br />
-          </p>
-        </div>
-      </div>
     </main>
 
 
