@@ -3,6 +3,7 @@ layout:    page
 title:     About
 permalink: /about/
 ---
+<p style="text-align:center"><img src="/images/avatar.png" alt="Me!" style="width: 25%; height: 25%"/></p>
 
 <p style='text-align: center;'><i>He's one of the worst students we've got.</i><br />- Dr. Nelson Guggenheim</p>
 
