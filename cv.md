@@ -7,13 +7,13 @@ I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing o
 
 # Education
 
-**Ph.D., Electrical and Computer Engineering,** Queen's University, Kingston, ON; 2012-present
+**Ph.D., Electrical and Computer Engineering,** [Queen's University](http://www.queensu.ca), Kingston, ON; 2012-present
 
 * *Supervisor:* Dr. Joshua Marshall
 
 * *Thesis topic:* Geotechnical mapping of rock surfaces with a mobile platform
 
-**M.A.Sc., Mechanical and Aerospace Engineering,** Carleton University, Ottawa, ON; 2009-2011
+**M.A.Sc., Mechanical and Aerospace Engineering,** [Carleton University](http://www.carleton.ca), Ottawa, ON; 2009-2011
 
 * *Supervisors:* Dr. Alex Ellery and Dr. Joshua Marshall
 
@@ -55,7 +55,7 @@ I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing o
 
 # Work experience
 
-**Young Graduate Trainee**, Research and Technology Group, European Space Operations Centre, European Space Agency, Darmstadt, Germany; Sept. 2011–Aug. 2012
+**Young Graduate Trainee**, Research and Technology Group, [European Space Operations Centre](http://www.esa.int/About_Us/ESOC), European Space Agency, Darmstadt, Germany; Sept. 2011–Aug. 2012
 
 * Wrote robotic operations software and a user interface that was deployed on the International Space Station as part of the METERON project
 
@@ -71,7 +71,7 @@ I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing o
 
 * Designed and built various mounts, stands and braces in a metal shop to outfit a vehicle with navigation sensors
 
-**Research Officer Assistant**, Institute for Aerospace Research, National Research Council Canada, Ottawa, ON; May 2007–Aug. 2008
+**Research Officer Assistant**, [Institute for Aerospace Research](http://www.nrc-cnrc.gc.ca/eng/rd/aerospace/index.html), National Research Council Canada, Ottawa, ON; May 2007–Aug. 2008
 
 * Researched and wrote literature reviews on aerospace materials and manufacturing methods
 
@@ -99,9 +99,9 @@ I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing o
 
 **Programming and Computing**
 
-* Julia, Python, C++, MATLAB, Simulink
+* [Julia](http://julialang.org), Python, C++, MATLAB, Simulink
 
-* Everyday experience working with Git, Point Cloud Library (PCL), Robot Operating System (ROS), and various other software and frameworks
+* Everyday experience working with [Git](https://git-scm.com), [Point Cloud Library (PCL)](http://pointclouds.org), [Robot Operating System (ROS)](http://www.ros.org), and various other software and frameworks
 
 * Experience programming in Windows, Linux, and Mac OS X
 
