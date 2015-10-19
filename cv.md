@@ -3,7 +3,7 @@ layout:    page
 title:     Curriculum vitae
 permalink: /cv/
 ---
-I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing on state estimation in robotics. I have extensive experience implementing Kalman filters, simultaneous localization and mapping (SLAM), and other algorithms on real robotic hardware. I am a lifelong learner (whether its learning an [exciting new programming language](http://julialang.org) or [programming state-of-the-art hardware](https://www.google.com/atap/project-tango/)), and I love to teach others in an [intuitive way](link/here).
+I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing on state estimation in robotics. I have extensive experience implementing Kalman filters, simultaneous localization and mapping (SLAM), and other algorithms on real robotic hardware. I am a lifelong learner (whether its learning an [exciting new programming language](http://julialang.org) or [programming state-of-the-art hardware](https://www.google.com/atap/project-tango/)), and I love to teach others in an [intuitive way](/2015/10/14/how-i-learn/).
 
 # Education
 
