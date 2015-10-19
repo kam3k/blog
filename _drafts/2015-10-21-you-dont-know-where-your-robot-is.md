@@ -5,7 +5,7 @@ comments: true
 date:   2015-10-21
 ---
 
-If you are learning about probabilistic robotics, it is always important to remember that you are working with *random variables*. In other words, you need to realize that---no matter how good your sensor is, or no matter how well you measured it---you are uncertain about the state of your robot. No matter what you do, you cannot know precisely where your robot is, how fast it is moving, or how it is oriented. What you can do, however, is quantify your ignorance. In other words, you can estimate just how well (or how badly) you know things.
+If you are learning about probabilistic robotics, it is always important to remember that you are working with *random variables*. In other words, you need to realize that---no matter how well you measured it---you are uncertain about the state of your robot. No matter what you do, you cannot know precisely where your robot is, how fast it is moving, or how it is oriented. What you can do, however, is quantify your ignorance. In other words, you can estimate just how well (or how badly) you know things.
 
 To better explain why random variables are used in robotics, let's look at an example. Suppose we are driving a robot down a road towards a wall, like in the image below.
 
@@ -27,33 +27,37 @@ Now that we've accepted that we're never going to know what $$x$$ is, we can do 
 
 ### Continuous random variables
 
-A continuous random variable is something that can take on any of an infinite number of possible values (e.g., the height of a pine tree, the time it takes you to read this sentence). But wait, if it can be any value, why aren't there pine trees that are three kilometres tall? This is because 
+A continuous random variable is something that can take on any of an infinite number of possible values (e.g., the height of a pine tree, the time it takes you to read this sentence). In our above example, the position of the robot can be modelled as a continuous random variable. In other words, an infinite number values for $$x$$ are possible, such as <nobr>10.02 m</nobr>, <nobr>11.93321 m</nobr>, <nobr>9.0001 m</nobr>, <nobr>9.0000000000001 m</nobr>, and so on. What we are interested in is the *probabilities* of $$x$$. A probability is a number between 0 and 1 that measures the likelihood of something occurring. The sentence
 
-Continuing with our pine tree example, let's call our random variable describing its height as $$H$$. The way we write the phrase "the probabilty that the height of a pine tree ($$H$$) is three kilometres tall" is
+<p style="text-align:center"><i>The probability of rolling a six on a fair die is one in six.</i></p>
 
-$$
-p(H=3~\text{km}).
-$$
-
-And as you might have guessed,
+is stated mathematically as
 
 $$
-p(H=3~\text{km}) = 0.
+p(D = 6) = \frac{1}{6}
 $$
 
-However, the reason why $$p(H=3~\text{km})=0$$ is not for the reason you may have guessed (i.e., its not because you've never seen a colossal pine tree). In fact, it might surprise you that
+where $$D$$ is a random variable representing the outcome of a die. If we were to drive our robot for <nobr>10 s</nobr> at <nobr>1 m/s</nobr>, it is not surprising that
 
 $$
-p(H = 30~\text{m}) = 0
+p(X = 200~\text{light years}) = 0.
 $$
 
-when surely you've seen pine trees that are about 30 m tall. Re-read that last sentence, I put a clue in it that explains all this nonsense. Here it is again: "...when surely you've seen pine trees that are *about* 30 m tall". A-ha! Note that I didn't write
+where $$X$$ is a random variable representing the position of the robot. However, you might be surprised to learn that
 
 $$
-p(H = \text{about}~30~\text{m}) = 0.
+p(X = 10~\text{ m}) = 0.
 $$
 
-It turns out that the probability that a pine tree is any *exact* height is zero. If you go out and find me a 30 m tall pine tree, I'll ask you if it's 30.00 m tall. And if it is, I'll ask you if its 30.0000 tall. I can go all day.
+Surely it's possible that the position of the robot is about <nobr>10 m</nobr> after driving at <nobr>1 m/s</nobr> for <nobr>10 s</nobr>? Re-read that last sentence, I put a clue in it that explains all this nonsense. Here is the important part: "...position of the robot is *about* <nobr>10 m</nobr>...". A-ha! Note that I didn't write
+
+$$
+p(X = \text{about}~10~\text{m}) = 0.
+$$
+
+It turns out that the probability that the robot is at any *exact* position is zero. If you go out and measure the position of the robot as <nobr>10.0 m</nobr>, I'll ask you if its position is 10.00 m. And if it is, I'll ask you if its position is 10.00000. I can go all day. This describes the difference between a *discrete* random variable, which has a finite number of outcomes (e.g., rolling a die), and a *continuous* random variable, which has an infinite number of outcomes (e.g., the position of a robot). So what good are probabilities for continuous random variables if they are all zero? For that we need to learn about probability distribution functions.
+
+### Probability distribution functions
 
 Alright we're getting too deep in the woods here. Let's explain our result with the help of a probability density function (PDF), before bringing all this discussion back to random variables in the context of robotics. By far the most common PDF you'll encounter when studying probabilistic robotics is the one for normal distributions (sometimes called Gaussian distributions). If the height of a pine tree is well described by a normal distribution (it turns out it is), its PDF is
 
