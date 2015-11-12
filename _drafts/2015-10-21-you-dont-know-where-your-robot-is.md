@@ -55,9 +55,9 @@ $$
 p(X = \text{about}~10~\text{m}) = 0.
 $$
 
-It turns out that the probability that the robot is at any *exact* position is zero. If you go out and measure the position of the robot as <nobr>10.0 m</nobr>, I'll ask you if its position is 10.00 m. And if it is, I'll ask you if its position is 10.00000. I can go all day. This describes the difference between a *discrete* random variable, which has a finite number of outcomes (e.g., rolling a die), and a *continuous* random variable, which has an infinite number of outcomes (e.g., the position of a robot). So what good are probabilities for continuous random variables if they are all zero? For that we need to learn about probability distribution functions.
+It turns out that the probability that the robot is at any *exact* position is zero. If you go out and measure the position of the robot as <nobr>10.0 m</nobr>, I'll ask you if its position is 10.00 m. And if it is, I'll ask you if its position is 10.00000. I can go all day. This describes the difference between a *discrete* random variable, which has a finite number of outcomes (e.g., rolling a die), and a *continuous* random variable, which has an infinite number of outcomes (e.g., the position of a robot). So what good are probabilities for continuous random variables if they are all zero? For that we need to learn about probability density functions.
 
-### Probability distribution functions
+### Probability density functions
 
 Alright we're getting too deep in the woods here. Let's explain our result with the help of a probability density function (PDF), before bringing all this discussion back to random variables in the context of robotics. By far the most common PDF you'll encounter when studying probabilistic robotics is the one for normal distributions (sometimes called Gaussian distributions). If the height of a pine tree is well described by a normal distribution (it turns out it is), its PDF is
 
@@ -67,10 +67,7 @@ $$
 
 where $$\mu$$ is the *mean* (average) height of a pine tree, and $$\sigma$$ is the standard deviation (how certain we are of the mean). Don't worry too much about the equation for now. A plot of this equation looks like this:
 
-<div>
-    <a href="https://plot.ly/~ckaiwu/105/" target="_blank" title="prices" style="display: block; text-align: center;"><img src="https://plot.ly/~ckaiwu/105.png" alt="prices" style="max-width: 100%;width: 600px;"  width="600" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-    <script data-plotly="ckaiwu:105"  src="https://plot.ly/embed.js" async></script>
-</div>
+![The probability density function of a normal distribution.](/images/normal_pdf.png)
 
 The point I want to make is that you can use the PDF to calculate the likelihood that a pine tree will be within a certain interval of heights (e.g., 35 to 40 m) can be calculated using the PDF. For example,
 

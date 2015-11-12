@@ -11,3 +11,4 @@ markdown:     kramdown
 redcarpet:
   extensions: ['smart', 'tables', 'with_toc_data']
 permalink:    pretty
+exclude: ['*.graffle']
