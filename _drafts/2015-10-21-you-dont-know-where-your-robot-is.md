@@ -7,6 +7,8 @@ date:   2015-10-21
 
 If you are learning about probabilistic robotics, it is always important to remember that you are working with *random variables*. In other words, you need to realize that---no matter how well you measured it---you are uncertain about the state of your robot. No matter what you do, you cannot know precisely where your robot is, how fast it is moving, or how it is oriented. What you can do, however, is quantify your ignorance. In other words, you can estimate just how well (or how badly) you know things.
 
+### Motivating example
+
 To better explain why random variables are used in robotics, let's look at an example. Suppose we are driving a robot down a road towards a wall, like in the image below.
 
 ![Driving a robot towards a wall](/images/random_variable_example.png)
@@ -27,7 +29,44 @@ Now that we've accepted that we're never going to know what $$x$$ is, we can do 
 
 ### Continuous random variables
 
-A continuous random variable is something that can take on any of an infinite number of possible values (e.g., the height of a pine tree, the time it takes you to read this sentence). In our above example, the position of the robot can be modelled as a continuous random variable. In other words, an infinite number values for $$x$$ are possible, such as <nobr>10.02 m</nobr>, <nobr>11.93321 m</nobr>, <nobr>9.0001 m</nobr>, <nobr>9.0000000000001 m</nobr>, and so on. What we are interested in is the *probabilities* of $$x$$. A probability is a number between 0 and 1 that measures the likelihood of something occurring. The sentence
+A continuous random variable is something that can take on any of an infinite number of possible values (e.g., the height of a pine tree, the time it takes you to read this sentence). In our above example, the position of the robot can be modelled as a continuous random variable. In other words, an infinite number values for $$x$$ are possible, such as <nobr>10.02 m</nobr>, <nobr>11.93321 m</nobr>, <nobr>9.0001 m</nobr>, <nobr>9.0000000000001 m</nobr>, and so on. What we are interested in is representing the *likelihood* of a value of $$x$$ occurring. 
+
+For example, suppose the true position of the robot in the above example is <nobr>5.113 m</nobr> (remember, we can't know this). If we have a good representation of the likelihood of $$x$$, then it should tell us that $$x$$ is much more likely to be <nobr>5 m</nobr> then <nobr>10 m</nobr>. By far the most common representation of the likelihood of a variable in probabilistic robotics is the normal (or Gaussian) distribution, which looks something like this: 
+
+![The probability density function of a normal distribution.](/images/normal_pdf.png)
+
+Don't worry about what $$f(x)$$ is just yet. A normal distribution can be specified by two numbers: $$\mu$$ and $$\sigma$$. The *mean* of the distribution is $$\mu$$ (it is also the median and mode, but don't worry about this for now), which is the most likely estimate of the random variable (in other words, it is the peak of the curve). The *standard deviation* of the distribution is $$\sigma$$, which specifies how spread out ("wide") the curve is.
+
+Returning to our robot example, suppose we used our sensors to model the position of the robot as a random variable with a normal distribution. If our sensors are pretty good, we might get something like $$\mu = $$ <nobr>5.2 m</nobr> and $$\sigma = $$ <nobr>0.1 m</nobr> (remember, the true position is <nobr>5.113 m</nobr>). If are sensors are a little worse, maybe we'll get something closer to $$\mu = $$ <nobr>5.1 m</nobr> and $$\sigma = $$ <nobr>0.3 m</nobr>. Note that our sensors getting worse makes $$\sigma$$ bigger (and the curve in the above plot "wider").
+
+### Probability density functions
+
+The *probability density function* (PDF) of the distribution of a random variable $$x$$ calculates the likelihood of $$x$$. In other words, it is the function $$f(x)$$ on the y-axis in the above plot for normal distributions. Mathematically,
+
+$$
+f(x) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+$$
+
+Don't worry too much about why the $$f(x)$$ takes this form. Just know that given the mean $$\mu$$ and standard deviation $$\mu$$ of a random variable $$x$$, $$f(x)$$ results in the above plot when you plug values of $$x$$. 
+
+We can use PDF to compare the relative likelihood of the robot being at different positions. For example, given $$\mu = $$ <nobr>5.1 m</nobr> and $$\sigma = $$ <nobr>0.2 m</nobr>, how much more likely is the position of the robot <nobr>5.2 m</nobr> compared to <nobr>5.5 m</nobr>? The answer is simply the ratio of their likelihoods; i.e.,
+
+$$
+f(5.2) = f(5.1 + 0.1) = f(\mu + 0.5\sigma) \approx 1.760
+$$
+
+$$
+f(5.5) = f(5.1 + 0.4) = f(\mu + 2\sigma) \approx 0.270
+$$
+
+$$
+\frac{f(5.2)}{f(5.5)} \approx 6.521
+$$
+
+In other words, the position <nobr>5.2 m</nobr> is approximately 6.521 more likely than <nobr>5.5 m</nobr>.
+  
+
+A probability is a number between 0 and 1 that measures the likelihood of something occurring. The sentence
 
 <p style="text-align:center"><i>The probability of rolling a six on a fair die is one in six.</i></p>
 
