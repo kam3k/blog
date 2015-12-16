@@ -2,7 +2,7 @@
 layout: post
 title:  You don't know where your robot is
 comments: true
-date:   2015-10-21
+date:   2015-12-16
 ---
 
 If you are learning about probabilistic robotics, it is always important to remember that you are working with *random variables*. In other words, you need to realize that---no matter how well you measured it---you are uncertain about the state of your robot. No matter what you do, you cannot know precisely where your robot is, how fast it is moving, or how it is oriented. What you can do, however, is quantify your ignorance. In other words, you can estimate just how well (or how badly) you know things.
@@ -19,7 +19,7 @@ Listed below are a few reasons why you cannot solve for an *exact* answer for $$
 
 * Let's say you're clever and you timed how long the robot has been driving (let's say it was exactly ten seconds), and you commanded the robot to drive at 1 m/s with your joystick. So since you've driven for ten seconds at 1 m/s, you say "Aha!, $$x$$ is 10 m!". However, how sure are you that you drove for ten seconds (and not 10.001 seconds)? How sure are you that your command of 1 m/s actually resulted in the robot moving at 1 m/s (and not 0.996 m/s)? How is the robot transforming your command of 1 m/s into how fast it turns the wheels?
 
-* Suppose you're sensor says you are 4.5 m from the wall, and you know from using your measuring tape that $$w$$ is 10 m (i.e., the distance to the wall from the start). Therefore, the position of the robot is just (10 - 4.5) m = 5.5 m, right? Well how good is that sensor? Can it tell the difference between 4.5 m and 4.52 m? How accurately did you know the position of the wall to begin with (with your measuring tape)?
+* Suppose your sensor says the robot is 4.5 m from the wall, and you know from using your measuring tape that $$w$$ is 10 m (i.e., the distance to the wall from the start). Therefore, the position of the robot is just (10 - 4.5) m = 5.5 m, right? Well how good is that sensor? Can it tell the difference between 4.5 m and 4.52 m? How accurately did you know the position of the wall to begin with (with your measuring tape)?
 
 * In this example, the wall is modelled as a straight, vertical surface. What if the actual wall has a door or window? What if it has wooden trim, or pictures hanging from it? What if someone got angry that they couldn't calculate $$x$$ exactly and they punched the wall, leaving a deep dent? 
 
@@ -47,9 +47,9 @@ $$
 f(x) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}
 $$
 
-Don't worry too much about why the $$f(x)$$ takes this form. Just know that given the mean $$\mu$$ and standard deviation $$\mu$$ of a random variable $$x$$, $$f(x)$$ results in the above plot when you plug values of $$x$$. 
+Don't worry too much about why the $$f(x)$$ takes this form. Just know that given the mean $$\mu$$ and standard deviation $$\sigma$$ of a random variable, $$f(x)$$ results in the above plot when you plug values of $$x$$. 
 
-We can use PDF to compare the relative likelihood of the robot being at different positions. For example, given $$\mu = $$ <nobr>5.1 m</nobr> and $$\sigma = $$ <nobr>0.2 m</nobr>, how much more likely is the position of the robot <nobr>5.2 m</nobr> compared to <nobr>5.5 m</nobr>? The answer is simply the ratio of their likelihoods; i.e.,
+We can use the PDF to compare the relative likelihood of the robot being at different positions. For example, given $$\mu = $$ <nobr>5.1 m</nobr> and $$\sigma = $$ <nobr>0.2 m</nobr>, how much more likely is the position of the robot <nobr>5.2 m</nobr> compared to <nobr>5.5 m</nobr>? The answer is simply the ratio of their likelihoods; i.e.,
 
 $$
 f(5.2) = f(5.1 + 0.1) = f(\mu + 0.5\sigma) \approx 1.760
@@ -64,52 +64,45 @@ $$
 $$
 
 In other words, the position <nobr>5.2 m</nobr> is approximately 6.521 more likely than <nobr>5.5 m</nobr>.
-  
 
-A probability is a number between 0 and 1 that measures the likelihood of something occurring. The sentence
+### Probability
 
-<p style="text-align:center"><i>The probability of rolling a six on a fair die is one in six.</i></p>
+The *probability* of a particular range of values of $$x$$ is an absolute measure of how likely it is that the true $$x$$ is in that range. A probability is a number between 0 (no chance of occurring) and 1 (is absolutely known to occur). For example, one might say "the probability that $$x$$ is between 4.5 and 5.5 is 0.87654".
 
-is stated mathematically as
+PDFs have the very important property that the area under the curve between two values of $$x$$ is the probability of that range of $$x$$. As you may guess, this means that the area under the full curve (i.e., between $$x=-\infty$$ and $$x=\infty$$), the area under the PDF is 1. More interesting is the area between non-infinite values of $$x$$, such as the example shown below.
 
-$$
-p(D = 6) = \frac{1}{6}
-$$
+![The probability density function of a normal distribution.](/images/normal_pdf_area.png)
 
-where $$D$$ is a random variable representing the outcome of a die. If we were to drive our robot for <nobr>10 s</nobr> at <nobr>1 m/s</nobr>, it is not surprising that
+Suppose that in the above PDF, $$\mu = $$ <nobr>5.1 m</nobr> and $$\sigma = $$ <nobr>0.2 m</nobr>. Then the highlighted area is the probability that $$x$$ is between <nobr>4.7 m</nobr> (i.e., $$\mu - 2\sigma$$) and <nobr>4.9 m</nobr> (i.e., $$\mu - \sigma$$). Recall from first year calculus that the area under a curve is calculated using integration. For the above curve, the probability of $$x$$ being in the given range is written as $$p(4.7 \leq x \leq 4.9)$$ and is the definite integral of the PDF; i.e.,
 
 $$
-p(X = 200~\text{light years}) = 0.
+p(4.7 \leq x \leq 4.9) = \int_{4.7}^{4.9} \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}} dx
 $$
 
-where $$X$$ is a random variable representing the position of the robot. However, you might be surprised to learn that
+Substituting in $$\mu = $$ <nobr>5.1 m</nobr> and $$\sigma = $$ <nobr>0.2 m</nobr>, we get
 
 $$
-p(X = 10~\text{ m}) = 0.
+p(4.7 \leq x \leq 4.9) = \int_{4.7}^{4.9} 1.995e^{-\frac{(x-5.1)^2}{0.08}} dx = 0.27
 $$
 
-Surely it's possible that the position of the robot is about <nobr>10 m</nobr> after driving at <nobr>1 m/s</nobr> for <nobr>10 s</nobr>? Re-read that last sentence, I put a clue in it that explains all this nonsense. Here is the important part: "...position of the robot is *about* <nobr>10 m</nobr>...". A-ha! Note that I didn't write
+In other words, there is a 27% chance that $$4.7 \leq x \leq 4.9$$.
 
-$$
-p(X = \text{about}~10~\text{m}) = 0.
-$$
+### You know where your robot may be
 
-It turns out that the probability that the robot is at any *exact* position is zero. If you go out and measure the position of the robot as <nobr>10.0 m</nobr>, I'll ask you if its position is 10.00 m. And if it is, I'll ask you if its position is 10.00000. I can go all day. This describes the difference between a *discrete* random variable, which has a finite number of outcomes (e.g., rolling a die), and a *continuous* random variable, which has an infinite number of outcomes (e.g., the position of a robot). So what good are probabilities for continuous random variables if they are all zero? For that we need to learn about probability density functions.
+I started off this post by emphasizing the fact that you don't know where your robot is. The best you can do is quantify your ignorance. Parameterizing the unknown quantity (e.g., the position of the robot) as a continuous random variable is one way to do this. In probabilistic robotics, normal distributions are the most common distribution used to represent random variables, which are commonly described by its mean $$\mu$$ and standard deviation $$\sigma$$. I should note that the variance $$\sigma^2$$ of a normal distribution is often stated in place of its standard deviation (i.e., it is literally the squared standard deviation).
 
-### Probability density functions
+So assuming you are using a normal distribution to represent the position of a robot, if someone asks "what is the position of the robot?", some appropriate equivalent answers are:
 
-Alright we're getting too deep in the woods here. Let's explain our result with the help of a probability density function (PDF), before bringing all this discussion back to random variables in the context of robotics. By far the most common PDF you'll encounter when studying probabilistic robotics is the one for normal distributions (sometimes called Gaussian distributions). If the height of a pine tree is well described by a normal distribution (it turns out it is), its PDF is
+* "I estimate its mean position to be <nobr>11.6 m</nobr> with a standard deviation of <nobr>0.5 m</nobr>."
+* "I am about 95% certain it is between <nobr>10.6 m</nobr> and <nobr>12.6 m</nobr>."
+* "I believe it is at <nobr>11.6 m</nobr> with a variance of 0.25 m$$^2$$."
 
-$$
-p(H = h) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(h-\mu)^2}{2\sigma^2}}
-$$
+Note that for the second answer, the integral between $$\mu - 2\sigma$$ and $$\mu + 2\sigma$$ is approximately 0.95 for the PDF of a normal distribution. Some insufficient answers are:
 
-where $$\mu$$ is the *mean* (average) height of a pine tree, and $$\sigma$$ is the standard deviation (how certain we are of the mean). Don't worry too much about the equation for now. A plot of this equation looks like this:
+* "It is approximately 11.6 m." (Missing information about uncertainty.)
+* "11.6 $$\pm$$ 0.5 m." (Is 0.5 m the standard deviation?)
+* "I believe it is at <nobr>11.6 m</nobr> with a variance of 0.25 m." (The units of variance should be m$$^2$$, making this statement confusing.)
 
-![The probability density function of a normal distribution.](/images/normal_pdf.png)
+Note that a common fallacy is people mistaking the estimated mean position being close to the true position as your estimate being "good". For example, suppose your current estimate of the robot's position is $$\mu = $$ <nobr>10.1 m</nobr> and $$\sigma = $$ <nobr>5.5 m</nobr>. Now you take out a measuring tape and measure the robot's position to be <nobr>10.02 m</nobr>. Awesome estimate right? Not necessarily! A good estimate requires that both the mean *and* the standard deviation to be a good representation of your current knowledge of the robot's position. If you had great sensors, perhaps $$\mu = $$ <nobr>10.1 m</nobr> and $$\sigma = $$ <nobr>0.15 m</nobr> is actually a more appropriate estimate of the robot's position.
 
-The point I want to make is that you can use the PDF to calculate the likelihood that a pine tree will be within a certain interval of heights (e.g., 35 to 40 m) can be calculated using the PDF. For example,
-
-$$
-p(35~\text{m} \leq H \leq 40~\text{m}) = \int_{35}^{40} \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(h-\mu)^2}{2\sigma^2}} dh.
-$$
+Always keep in mind, *you don't know where your robot is!*
