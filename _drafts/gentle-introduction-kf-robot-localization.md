@@ -68,15 +68,20 @@ $$
 ### Simulation
 
 <pre>
-<code class="julia">
+<code class="julia">julia> κ = 0
+0
 
-x = 37
-\mu = 43
+julia> β = 2
+2
 
-type Neato
+julia> L = 3
+3
+
+julia> λ = α^2 * (L + κ) - L
+-2.999997
+
+immutable Neato
 x::Int64
 y::Float64
 end
-
-</code>
-</pre>
+</code></pre>
