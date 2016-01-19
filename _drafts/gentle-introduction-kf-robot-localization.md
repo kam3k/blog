@@ -24,37 +24,68 @@ Now imagine you are holding a joystick with which you can command the robot to g
 - the known position of the wall $$w$$; and
 - the initial position of the robot $$x_0$$.
 
-As discussed in a [previous post](http://marcgallant.ca/2015/12/16/you-dont-know-where-your-robot-is/), you can never know for sure what $$x$$ is. Instead you use a Gaussian distribution with mean $$\mu_x$$ and variance $$\sigma_x^2$$ to represent $$x$$ as a continuous random variable. Another way to write this is
+The quantity we are trying to estimate ($$x$$ in this case) is commonly referred to as the *state*. As discussed in a [previous post](http://marcgallant.ca/2015/12/16/you-dont-know-where-your-robot-is/), you can never know for sure what $$x$$ is. Instead you use a Gaussian distribution with mean $$\mu_x$$ and variance $$\sigma_x^2$$ to represent $$x$$ as a continuous random variable. Another way to write this is
 
 $$
 x \sim \mathcal{N}(\mu_x, \sigma_x^2).
 $$
 
-Similarly, you should also represent your joystick commands as a continuous random variable. This is because there are lots of little things that can make the true speed of the robot different from your joystick command (e.g., slightly deflated tires on the robot, resolution of the joystick, etc.). Therefore, the speed of the robot $$u$$ is represented as a Gaussian random variable; i.e.,
+Similarly, you should also represent your joystick commands as a continuous random variable. This is because there are lots of little things that can make the true speed of the robot different from your joystick command (e.g., slightly deflated tires on the robot, resolution of the joystick, etc.). Therefore, the speed of the robot $$u$$ is represented with a Gaussian distribution; i.e.,
 
 $$
-u \sim \mathcal{N}(\mu_u, \sigma_u^2)
+u \sim \mathcal{N}(\mu_u, \sigma_u^2).
 $$
 
+Finally, your one-dimensional laser scanner should also be represented as a continuous random variable. No sensor is perfect, so we can expect some noise in our measurements of the wall. Therefore, each laser measurement is represented with a Gaussian distribution; i.e.,
+
 $$
-z \sim \mathcal{N}(\mu_z, \sigma_z^2)
+z \sim \mathcal{N}(\mu_z, \sigma_z^2).
 $$
 
 ### Assumptions
 
+- discrete time
+- independent measurements
+- gaussian distributions appropriate
+
 ### The motion model
+The *motion model* describes how our state changes over time in response to inputs. In our case, it describes what happens to the position of the robot when you apply joystick commands. Given the position at the previous time step $$x_{k-1}$$ and the current velocity input by the joystick $$u_k$$, the new position of the robot $$x_k$$ is
 
 $$
-x_k = x_{k-1} + t u_k
+x_k = x_{k-1} + t u_k,
 $$
 
-$$
-a_k = \frac{\partial x_k}{\partial x_{k-1}} = 1
-$$
+where $$t$$ is length of the time step. For example, if the position of the robot is $$0.43$$ m and you command the robot to go $$0.5$$ m/s for $$0.1$$ s, then the new position of the robot is
 
 $$
-b_k = \frac{\partial x_k}{\partial u_k} = t
+0.43 + (0.1)(0.5) = 0.48 \text{ m}.
 $$
+
+Note, however, that $$x_k$$, $$x_{k-1}$$, and $$u_k$$ are random variables. We will address how to calculate the variance of $$x_k$$ given the variances of $$x_{k-1}$$, and $$u_k$$ later; however, would you expect the variance to increase or decrease? If you think about it, by moving the robot forward with a noisy joystick command, we are "adding" together two sources of uncertainty: the uncertainty in our previous position, and the uncertainty associated with the noise in our joystick command. Therefore, the variance of $$x_k$$ should *increase*. If you were to repeatedly apply the motion model to new joystick commands, the resulting estimation of the robot's position over time is called *dead reckoning*, and is doomed to become more and more uncertain the longer you do it.
+
+#### Motion model coefficients
+
+The Kalman filter requires two terms that are part of the motion model. The first is $$a_k$$, which describes how you would expect $$x_k$$ to change in response to changes in $$x_{k-1}$$, which can be calculated by taking the partial derivative of the motion model with respect to $$x_{k-1}$$; i.e.,
+
+$$
+a_k = \frac{\partial x_k}{\partial x_{k-1}} = 1.
+$$
+
+In other words, a change in $$x_{k-1}$$ by some value $$\Delta x$$ would result in a change in $$x_k$$ by $$(1)(\Delta x)$$. For example, let's say I increased $$x_{k-1}$$ in the previous example by $$0.2$$ m (i.e., $$0.43 + 0.2 = 0.63$$ m). Then the new $$x_k$$ is $$ 0.63 + (0.1)(0.5) = 0.68 \text{ m}$$, which is $$0.2$$ m greater than the $$x_k$$ in the previous example, as expected. Similarly, we require $$b_k$$, which describes how you would expect $$x_k$$ to change in response to changes in $$u_k$$; i.e.,
+
+$$
+b_k = \frac{\partial x_k}{\partial u_k} = t.
+$$
+
+For example, if I decreased $$u_k$$ in the original example by $$0.1$$ m/s (i.e., $$0.5 - 0.1 = 0.4$$ m/s), the new $$x_k$$ is $$ 0.43 + (0.1)(0.4) = 0.47 \text{ m} $$, which is $$t(0.1) = (0.1)(0.1) = 0.01$$ m less than the original position, as expected.
+
+Did you notice anything special about the values of $$a_k$$ and $$b_k$$? Maybe you noticed that the motion model has the following form:
+
+$$
+x_k = a_k x_{k-1} + b_k u_k.
+$$
+
+This is always the case when the motion model is *linear*, which was one of our assumptions. When the motion model is linear, the expressions for $$a_k$$ and $$b_k$$ do not contain the state or the input. Furthermore, consider the role of $$a_k$$ and $$b_k$$. The $$a_k$$ term converts a state in the past to a state in the present in the absence of inputs (in our case, the position of the robot doesn't change if there are no inputs, therefore $$a_k = 1$$ makes sense), and the $$b_k$$ terms converts an input to a change in state (in our case, velocity is converted into a change in position through numerical integration by multiplying by $$t$$, therefore $$b_k = t$$ makes sense). As a result, note that $$a_k$$ is unitless and $$b_k$$ has units of seconds.
 
 ### The measurement model
 
