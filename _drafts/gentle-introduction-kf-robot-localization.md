@@ -1,15 +1,17 @@
 ---
 layout: post
-title:  A gentle introduction to the Kalman filter
+title: A gentle introduction to robot localization with a Kalman filter
 comments: true
-date:   2016-01-12
+date:   2016-01-28
 ---
 
-Introductory paragraph will go here. Remember to write disclaimer saying that it's to get an intuitive understanding, not technically rigourous with proofs. Maybe talk about how it's a special case of the Bayes' filter.
+I've come across various instances of people asking for an intuitive introduction to the Kalman filter in the context of robotics. These people are often hobbyists, undergraduate students, or keen high school students trying to get their robot to properly combine various sensor information. I've even written some answers on the [Robotics Stack Exchange](http://robotics.stackexchange.com) helping people with various localization and mapping problems. These people are often referred to great references (e.g., [Probabilistic Robots](http://www.probabilistic-robotics.org)), but many give up in the first few chapters because of a lack of grasping what is really going on, or trouble with why something works. To this end, this post shows how a very basic Kalman filter works using a bottom-up approach. I use a simple one-dimensional robot to really try to get across *why* this fancy algorithm has been so popular over the years.
 
-### Prerequisities
+I should point out that this is not a mathematically rigourous treatment of the Kalman filter. I'll leave that to the textbooks. What I hope to accomplish here is a basic understanding of the fundamentals, and to leave the reader with an appreciation of the usefulness of this beautiful algorithm.
 
-### Problem setup
+## Prerequisities
+
+## Problem setup
 
 The problem we are trying to solve is illustrated below. We have a robot that can drive forward towards a wall given your joystick commands $$u$$ (e.g., $$u = 2.3$$ m/s). The robot is equipped with a sensor capable of measuring the distance $$z$$ to the wall (e.g., $$z = 8.31$$ m), and know the position of the wall $$w$$ relative to the start (e.g., $$w = 10.0$$ m). You place the robot near the start and command it to start moving forward. Given all this information, you are interested in estimating the position of the robot $$x$$. 
 
@@ -40,14 +42,14 @@ $$
 z \sim \mathcal{N}(\mu_z, \sigma_z^2).
 $$
 
-### Assumptions
+## Assumptions
 Before we continue, I should note that the following Kalman filter makes a couple (reasonable) assumptions. 
 
 1. All measurements are *independent*. In other words, previous measurements have no effect whatsoever on future measurements. For example, if your sensor measures $$z=8.45$$ m, this does not influence the next value of $$z$$. 
 
 2. Gaussian distributions are a good representation of $$x$$, $$u$$, and $$z$$. For example, if our robot was standing still and our sensor took thousands of measurements, we'd expect those measurements to be normally distributed. This is usually a fair assumption because the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem).
 
-### Our strategy for estimating $$x$$
+## Our strategy for estimating $$x$$
 Before getting into the mathematical details, I'm going to discuss the general strategy of how we are going to proceed. First, we're going to say our initial estimate of $$x$$ is the location at which (we think) the robot starts. Let's say there is a "starting line" drawn on the ground at $$x=0$$ where we place our robot. So at this point we have (for example)
 
 $$
@@ -62,29 +64,42 @@ Note that we are not sure if we started the robot at *exactly* $$x=0$$ m, so we 
 
 The following couple sections go into the details of these two steps.
 
-### Prediction
+## Prediction
 The prediction uses a *motion model* to predict the new state based on new inputs. In our case, it describes what happens to the position of the robot when you apply joystick commands. Given the position at the previous time step $$x_{k-1}$$ and the current velocity input by the joystick $$u_k$$, the predicted position of the robot $$x_k$$ is
 
 $$
 x_k = x_{k-1} + t u_k,
 $$
 
-where $$t$$ is length of the time step. For example, if the position of the robot is $$0.43$$ m and you command the robot to go $$0.5$$ m/s for $$0.1$$ s, then the predicted position of the robot is
+where $$t$$ is length of the time step. Note, however, that $$x_k$$, $$x_{k-1}$$, and $$u_k$$ are random variables. Here, we take advantage of a couple important properties of Gaussian random variables:
+
+1. Given two Gaussian random variables $$a\sim\mathcal{N}(\mu_a,\sigma^2_a)$$ and $$b\sim\mathcal{N}(\mu_b,\sigma^2_b)$$, their sum $$c = a + b$$ is also a Gaussian random variable, where $$c\sim\mathcal{N}(\mu_a + \mu_b,\sigma^2_a + \sigma^2_b)$$.
+
+2. Given a Gaussian random variable $$a\sim\mathcal{N}(\mu_a,\sigma^2_a)$$, multiplying it by a scalar $$b = na$$ results in the Gaussian random variable $$b\sim\mathcal{N}(n\mu_a, n^2\sigma^2_a)$$.
+
+In other words, if you apply a *linear* operation to a Gaussian random variable, the result is also a Gaussian random variable. Keeping this in mind, let's look at how we properly update our position estimate when we perform a prediction using the motion model:
 
 $$
-0.43 + (0.1)(0.5) = 0.48 \text{ m}.
+\begin{align}
+\mu_{x,k} &= \mu_{x,k-1} + t \mu_{u,k} \\
+\sigma^2_{x,k} &= \sigma^2_{x,k-1} + t^2\sigma^2_{u,k}.
+\end{align}
 $$
 
-Note, however, that $$x_k$$, $$x_{k-1}$$, and $$u_k$$ are random variables. Here, we take advantage of a couple important properties of Gaussian random variables:
+So it turns out updating our estimate of $$x$$ in the prediction step is pretty straightforward precisely because our motion model is linear. When this is not the case, we *cannot* use a regular Kalman filter (this is commonly dealt with by using the extended Kalman filter (EKF) or unscented Kalman filter (UKF), but that is beyond the scope of this post).
 
-1.
+An important result of the prediction step is that the variance of our estimate of $$x$$ has *increased*. It is the old variance plus some additional uncertainty caused by our noisy motion command. Intuitively this makes sense; we applied a noisy motion command so naturally we are less certain about where the robot is. Let's look at an example of PDFs of our estimate of $$x$$ before and after an application of the prediction step (see [this previous post](http://marcgallant.ca/2015/12/16/you-dont-know-where-your-robot-is/) for a review of PDFs):
 
+![PDFs illustrating the prediction step of the Kalman filter](/images/kf_predict.png)
 
-We will address how to calculate the variance of $$x_k$$ given the variances of $$x_{k-1}$$, and $$u_k$$ later; however, would you expect the variance to increase or decrease? If you think about it, by moving the robot forward with a noisy joystick command, we are "adding" together two sources of uncertainty: the uncertainty in our previous position, and the uncertainty associated with the noise in our joystick command. Therefore, the variance of $$x_k$$ should *increase*. If you were to repeatedly apply the motion model to new joystick commands, the resulting estimation of the robot's position over time is called *dead reckoning*, and is doomed to become more and more uncertain the longer you do it.
+The above example illustrates the two things the prediction does: it moves our estimate forward and increases the variance. You can imagine what would happen if we didn't have sensor to perform a correction step: the best we could do is just repeatedly perform predictions using our joystick commands. As a result, we would keep moving the estimate forward, but it would get more and more uncertain over time. This is called *dead reckoning*, and is usually only a suitable form of estimation over short distances.
 
-### Correction
+## Correction
 
-### The motion model
+## Putting it all together
+
+<!---
+## The motion model
 The *motion model* describes how our state changes over time in response to inputs. In our case, it describes what happens to the position of the robot when you apply joystick commands. Given the position at the previous time step $$x_{k-1}$$ and the current velocity input by the joystick $$u_k$$, the new position of the robot $$x_k$$ is
 
 $$
@@ -99,7 +114,7 @@ $$
 
 Note, however, that $$x_k$$, $$x_{k-1}$$, and $$u_k$$ are random variables. We will address how to calculate the variance of $$x_k$$ given the variances of $$x_{k-1}$$, and $$u_k$$ later; however, would you expect the variance to increase or decrease? If you think about it, by moving the robot forward with a noisy joystick command, we are "adding" together two sources of uncertainty: the uncertainty in our previous position, and the uncertainty associated with the noise in our joystick command. Therefore, the variance of $$x_k$$ should *increase*. If you were to repeatedly apply the motion model to new joystick commands, the resulting estimation of the robot's position over time is called *dead reckoning*, and is doomed to become more and more uncertain the longer you do it.
 
-#### Motion model coefficients
+### Motion model coefficients
 
 The Kalman filter requires two terms that are part of the motion model. The first is $$a_k$$, which describes how you would expect $$x_k$$ to change in response to changes in $$x_{k-1}$$, which can be calculated by taking the partial derivative of the motion model with respect to $$x_{k-1}$$; i.e.,
 
@@ -123,7 +138,7 @@ $$
 
 This is always the case when the motion model is *linear*, which was one of our assumptions. When the motion model is linear, the expressions for $$a_k$$ and $$b_k$$ do not contain the state or the input. Furthermore, consider the role of $$a_k$$ and $$b_k$$. The $$a_k$$ term converts a state in the past to a state in the present in the absence of inputs (in our case, the position of the robot doesn't change if there are no inputs, therefore $$a_k = 1$$ makes sense), and the $$b_k$$ terms converts an input to a change in state (in our case, velocity is converted into a change in position through numerical integration by multiplying by $$t$$, therefore $$b_k = t$$ makes sense). As a result, note that $$a_k$$ is unitless and $$b_k$$ has units of seconds.
 
-### The measurement model
+## The measurement model
 
 $$
 z_k = w - x_k
@@ -133,7 +148,7 @@ $$
 c_k = \frac{\partial z_k}{\partial x_k} = -1
 $$
 
-### The Kalman filter
+## The Kalman filter
 
 $$
 \begin{align}
@@ -168,7 +183,9 @@ $$
 \sigma_{x,k}^2 \gets (1 + K_k)\sigma_{x,k}^2
 $$
 
-### Simulation
+-->
+
+## Simulation
 
 <pre>
 <code class="julia">julia> κ = 0
