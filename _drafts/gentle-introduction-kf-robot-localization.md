@@ -58,7 +58,7 @@ Note that we are not sure if we started the robot at *exactly* $$x=0$$ m, so we 
 
 1. *Predict* the new position of the robot by integrating the speed we commanded with the joystick. Think of it this way: if the robot was at $$x=8.1$$ m and we commanded it to go $$0.3$$ m/s for one second, a good prediction of where the robot is now would be $$x=8.4$$ m. This step requires us to have a *motion model*, which is discussed below.
 
-2. *Correct* our prediction with a new measurement by the sensor.
+2. *Correct* our prediction with a new measurement by the sensor. Let's say our prediction was $$x = 8.4$$ m, and we know the wall is $$10$$ m from the start. Now we take a measurement with our sensor, and we get (for example) $$z = 1.67$$ m.
 
 ### The motion model
 The *motion model* describes how our state changes over time in response to inputs. In our case, it describes what happens to the position of the robot when you apply joystick commands. Given the position at the previous time step $$x_{k-1}$$ and the current velocity input by the joystick $$u_k$$, the new position of the robot $$x_k$$ is
