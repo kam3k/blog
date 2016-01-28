@@ -56,9 +56,33 @@ $$
 
 Note that we are not sure if we started the robot at *exactly* $$x=0$$ m, so we say our mean is zero with some initial variance. Now we apply a joystick command to start driving forward. Estimating $$x$$ now depends on combining two pieces of information: our commanded speed and our sensor measurements. We combine these by repeatedly performing the following two steps:
 
-1. *Predict* the new position of the robot by integrating the speed we commanded with the joystick. Think of it this way: if the robot was at $$x=8.1$$ m and we commanded it to go $$0.3$$ m/s for one second, a good prediction of where the robot is now would be $$x=8.4$$ m. This step requires us to have a *motion model*, which is discussed below.
+1. *Predict* the new position of the robot by integrating the speed we commanded with the joystick. Think of it this way: if the robot was at $$x=8.1$$ m and we commanded it to go $$0.3$$ m/s for one second, a good prediction of where the robot is now would be $$x=8.4$$ m.
 
-2. *Correct* our prediction with a new measurement by the sensor. Let's say our prediction was $$x = 8.4$$ m, and we know the wall is $$10$$ m from the start. Now we take a measurement with our sensor, and we get (for example) $$z = 1.67$$ m.
+2. *Correct* our prediction with a new measurement by the sensor. Let's say our prediction was $$x = 8.4$$ m, and we know the wall is $$10$$ m from the start. Now we take a measurement with our sensor, and we get (for example) $$z = 1.67$$ m. Well given that our wall is at $$w = 10$$ m, a measurement of $$z = 1.67$$ m implies that we are at $$x = 10 - 1.67 = 8.33$$ m, which is different from our prediction. So which value do we use? The answer is *both*. We combine the two estimates, using their respective uncertainties to determine how much we "believe" one versus the other.
+
+The following couple sections go into the details of these two steps.
+
+### Prediction
+The prediction uses a *motion model* to predict the new state based on new inputs. In our case, it describes what happens to the position of the robot when you apply joystick commands. Given the position at the previous time step $$x_{k-1}$$ and the current velocity input by the joystick $$u_k$$, the predicted position of the robot $$x_k$$ is
+
+$$
+x_k = x_{k-1} + t u_k,
+$$
+
+where $$t$$ is length of the time step. For example, if the position of the robot is $$0.43$$ m and you command the robot to go $$0.5$$ m/s for $$0.1$$ s, then the predicted position of the robot is
+
+$$
+0.43 + (0.1)(0.5) = 0.48 \text{ m}.
+$$
+
+Note, however, that $$x_k$$, $$x_{k-1}$$, and $$u_k$$ are random variables. Here, we take advantage of a couple important properties of Gaussian random variables:
+
+1.
+
+
+We will address how to calculate the variance of $$x_k$$ given the variances of $$x_{k-1}$$, and $$u_k$$ later; however, would you expect the variance to increase or decrease? If you think about it, by moving the robot forward with a noisy joystick command, we are "adding" together two sources of uncertainty: the uncertainty in our previous position, and the uncertainty associated with the noise in our joystick command. Therefore, the variance of $$x_k$$ should *increase*. If you were to repeatedly apply the motion model to new joystick commands, the resulting estimation of the robot's position over time is called *dead reckoning*, and is doomed to become more and more uncertain the longer you do it.
+
+### Correction
 
 ### The motion model
 The *motion model* describes how our state changes over time in response to inputs. In our case, it describes what happens to the position of the robot when you apply joystick commands. Given the position at the previous time step $$x_{k-1}$$ and the current velocity input by the joystick $$u_k$$, the new position of the robot $$x_k$$ is
