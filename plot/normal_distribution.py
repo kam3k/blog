@@ -14,4 +14,4 @@ plt.xlim([-3.5, 3.5])
 plt.ylim([0, 0.45])
 fig.set_size_inches(5, 2)
 
-plt.savefig("../images/normal_pdf.png", dpi=300)
+plt.savefig("../images/normal_pdf_temp.png", dpi=300)
