@@ -11,42 +11,54 @@ Introductory paragraph will go here. Remember to write disclaimer saying that it
 
 ### Problem setup
 
-The figure below illustrates the scenario for which a KF will be implemented. We will be estimating the position of a one-dimensional robot as it drives toward a wall. 
+The problem we are trying to solve is illustrated below. We have a robot that can drive forward towards a wall given your joystick commands $$u$$ (e.g., $$u = 2.3$$ m/s). The robot is equipped with a sensor capable of measuring the distance $$z$$ to the wall (e.g., $$z = 8.31$$ m), and know the position of the wall $$w$$ relative to the start (e.g., $$w = 10.0$$ m). You place the robot near the start and command it to start moving forward. Given all this information, you are interested in estimating the position of the robot $$x$$. 
 
 ![Driving a robot towards a wall](/images/random_variable_example.png)
 
-The robot begins at the "Start" on the far left. Before starting the experiment, you measure the distance between "Start" and the wall. You equip the robot with a one-dimensional laser scanner that measures the distance between the robot and the wall ten times per second. 
-
-Now imagine you are holding a joystick with which you can command the robot to go forward or backward at any practical speed. You start by placing the robot close to "Start" and start driving the robot towards the wall. Using all of this information, you want to estimate how far you've driven. In other words, you want to estimate $$x$$ given
+How do you combine all of this information to estimate $$x$$? This is where the Kalman filter comes in. It combines
 
 - your joystick commands $$u$$;
 - the laser measurements $$z$$;
 - the known position of the wall $$w$$; and
-- the initial position of the robot $$x_0$$.
+- the initial position of the robot $$x_0$$
 
-The quantity we are trying to estimate ($$x$$ in this case) is commonly referred to as the *state*. As discussed in a [previous post](http://marcgallant.ca/2015/12/16/you-dont-know-where-your-robot-is/), you can never know for sure what $$x$$ is. Instead you use a Gaussian distribution with mean $$\mu_x$$ and variance $$\sigma_x^2$$ to represent $$x$$ as a continuous random variable. Another way to write this is
+to come up with an estimate of $$x$$. The quantity we are trying to estimate ($$x$$ in this case) is commonly referred to as the *state*. As discussed in a [previous post](http://marcgallant.ca/2015/12/16/you-dont-know-where-your-robot-is/), you can never know for sure what $$x$$ is. Instead you use a Gaussian distribution with mean $$\mu_x$$ and variance $$\sigma_x^2$$ to represent $$x$$ as a continuous random variable. Another way to write this is
 
 $$
 x \sim \mathcal{N}(\mu_x, \sigma_x^2).
 $$
 
-Similarly, you should also represent your joystick commands as a continuous random variable. This is because there are lots of little things that can make the true speed of the robot different from your joystick command (e.g., slightly deflated tires on the robot, resolution of the joystick, etc.). Therefore, the speed of the robot $$u$$ is represented with a Gaussian distribution; i.e.,
+Similarly, you should also represent your joystick commands as a continuous random variable because there are lots of little things that can make the true speed of the robot different from your joystick command (e.g., slightly deflated tires on the robot, resolution of the joystick, etc.). Therefore, the speed of the robot $$u$$ is represented with a Gaussian distribution; i.e.,
 
 $$
 u \sim \mathcal{N}(\mu_u, \sigma_u^2).
 $$
 
-Finally, your one-dimensional laser scanner should also be represented as a continuous random variable. No sensor is perfect, so we can expect some noise in our measurements of the wall. Therefore, each laser measurement is represented with a Gaussian distribution; i.e.,
+Finally, your sensor measurements should also be represented as a continuous random variable. No sensor is perfect, so we can expect some noise in our measurements of the wall. Therefore, each laser measurement is represented with a Gaussian distribution; i.e.,
 
 $$
 z \sim \mathcal{N}(\mu_z, \sigma_z^2).
 $$
 
 ### Assumptions
+Before we continue, I should note that the following Kalman filter makes a couple (reasonable) assumptions. 
 
-- discrete time
-- independent measurements
-- gaussian distributions appropriate
+1. All measurements are *independent*. In other words, previous measurements have no effect whatsoever on future measurements. For example, if your sensor measures $$z=8.45$$ m, this does not influence the next value of $$z$$. 
+
+2. Gaussian distributions are a good representation of $$x$$, $$u$$, and $$z$$. For example, if our robot was standing still and our sensor took thousands of measurements, we'd expect those measurements to be normally distributed. This is usually a fair assumption because the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem).
+
+### Our strategy for estimating $$x$$
+Before getting into the mathematical details, I'm going to discuss the general strategy of how we are going to proceed. First, we're going to say our initial estimate of $$x$$ is the location at which (we think) the robot starts. Let's say there is a "starting line" drawn on the ground at $$x=0$$ where we place our robot. So at this point we have (for example)
+
+$$
+\mu_{x,0} = 0 \text{ m}, \quad \sigma_{x,0}^2 = 0.05^2 \text{ m}^2.
+$$
+
+Note that we are not sure if we started the robot at *exactly* $$x=0$$ m, so we say our mean is zero with some initial variance. Now we apply a joystick command to start driving forward. Estimating $$x$$ now depends on combining two pieces of information: our commanded speed and our sensor measurements. We combine these by repeatedly performing the following two steps:
+
+1. *Predict* the new position of the robot by integrating the speed we commanded with the joystick. Think of it this way: if the robot was at $$x=8.1$$ m and we commanded it to go $$0.3$$ m/s for one second, a good prediction of where the robot is now would be $$x=8.4$$ m. This step requires us to have a *motion model*, which is discussed below.
+
+2. *Correct* our prediction with a new measurement by the sensor.
 
 ### The motion model
 The *motion model* describes how our state changes over time in response to inputs. In our case, it describes what happens to the position of the robot when you apply joystick commands. Given the position at the previous time step $$x_{k-1}$$ and the current velocity input by the joystick $$u_k$$, the new position of the robot $$x_k$$ is
