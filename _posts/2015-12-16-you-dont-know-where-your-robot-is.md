@@ -7,7 +7,7 @@ date:   2015-12-16
 
 If you are learning about probabilistic robotics, it is always important to remember that you are working with *random variables*. In other words, you need to realize that---no matter how well you measured it---you are uncertain about the state of your robot. No matter what you do, you cannot know precisely where your robot is, how fast it is moving, or how it is oriented. What you can do, however, is quantify your ignorance. In other words, you can estimate just how well (or how badly) you know things.
 
-### Motivating example
+## Motivating example
 
 To better explain why random variables are used in robotics, let's look at an example. Suppose we are driving a robot down a road towards a wall, like in the image below.
 
@@ -27,7 +27,7 @@ Listed below are a few reasons why you cannot solve for an *exact* answer for $$
 
 Now that we've accepted that we're never going to know what $$x$$ is, we can do the next best thing: represent $$x$$ as a *continuous random variable*.
 
-### Continuous random variables
+## Continuous random variables
 
 A continuous random variable is something that can take on any of an infinite number of possible values (e.g., the height of a pine tree, the time it takes you to read this sentence). In our above example, the position of the robot can be modelled as a continuous random variable. In other words, an infinite number values for $$x$$ are possible, such as <nobr>10.02 m</nobr>, <nobr>11.93321 m</nobr>, <nobr>9.0001 m</nobr>, <nobr>9.0000000000001 m</nobr>, and so on. What we are interested in is representing the *likelihood* of a value of $$x$$ occurring. 
 
@@ -39,7 +39,7 @@ Don't worry about what $$f(x)$$ is just yet. A normal distribution can be specif
 
 Returning to our robot example, suppose we used our sensors to model the position of the robot as a random variable with a normal distribution. If our sensors are pretty good, we might get something like $$\mu = $$ <nobr>5.2 m</nobr> and $$\sigma = $$ <nobr>0.1 m</nobr> (remember, the true position is <nobr>5.113 m</nobr>). If are sensors are a little worse, maybe we'll get something closer to $$\mu = $$ <nobr>5.1 m</nobr> and $$\sigma = $$ <nobr>0.3 m</nobr>. Note that our sensors getting worse makes $$\sigma$$ bigger (and the curve in the above plot "wider").
 
-### Probability density functions
+## Probability density functions
 
 The *probability density function* (PDF) of the distribution of a random variable $$x$$ calculates the likelihood of $$x$$. In other words, it is the function $$f(x)$$ on the y-axis in the above plot for normal distributions. Mathematically,
 
@@ -65,7 +65,7 @@ $$
 
 In other words, the position <nobr>5.2 m</nobr> is approximately 6.521 more likely than <nobr>5.5 m</nobr>.
 
-### Probability
+## Probability
 
 The *probability* of a particular range of values of $$x$$ is an absolute measure of how likely it is that the true $$x$$ is in that range. A probability is a number between 0 (no chance of occurring) and 1 (is absolutely known to occur). For example, one might say "the probability that $$x$$ is between 4.5 and 5.5 is 0.87654".
 
@@ -87,7 +87,7 @@ $$
 
 In other words, there is a 27% chance that $$4.7 \leq x \leq 4.9$$.
 
-### You know where your robot may be
+## You know where your robot may be
 
 I started off this post by emphasizing the fact that you don't know where your robot is. The best you can do is quantify your ignorance. Parameterizing the unknown quantity (e.g., the position of the robot) as a continuous random variable is one way to do this. In probabilistic robotics, normal distributions are the most common distribution used to represent random variables, which are commonly described by its mean $$\mu$$ and standard deviation $$\sigma$$. I should note that the variance $$\sigma^2$$ of a normal distribution is often stated in place of its standard deviation (i.e., it is literally the squared standard deviation).
 
