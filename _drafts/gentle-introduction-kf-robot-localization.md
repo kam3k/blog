@@ -71,13 +71,13 @@ $$
 x_k = x_{k-1} + t u_k,
 $$
 
-where $$t$$ is length of the time step. Note, however, that $$x_k$$, $$x_{k-1}$$, and $$u_k$$ are random variables. Here, we take advantage of a couple important properties of Gaussian random variables:
+where $$t$$ is length of the time step. For example, suppose the robot was at $$2.5$$ m ($$x_{k-1}$$) and we used the joystick to command it to go $$0.5$$ m/s ($$u_k$$) for $$1$$ s ($$t$$). According to the motion model, our predicted position ($$x_k$$) is $$2.5 + (1)(0.5) = 3.0$$ m. Note, however, that $$x_k$$, $$x_{k-1}$$, and $$u_k$$ are random variables. To deal with this, we take advantage of a couple important properties of Gaussian random variables:
 
 1. Given two Gaussian random variables $$a\sim\mathcal{N}(\mu_a,\sigma^2_a)$$ and $$b\sim\mathcal{N}(\mu_b,\sigma^2_b)$$, their sum $$c = a + b$$ is also a Gaussian random variable, where $$c\sim\mathcal{N}(\mu_a + \mu_b,\sigma^2_a + \sigma^2_b)$$.
 
 2. Given a Gaussian random variable $$a\sim\mathcal{N}(\mu_a,\sigma^2_a)$$, multiplying it by a scalar $$b = na$$ results in the Gaussian random variable $$b\sim\mathcal{N}(n\mu_a, n^2\sigma^2_a)$$.
 
-In other words, if you apply a *linear* operation to a Gaussian random variable, the result is also a Gaussian random variable. Keeping this in mind, let's look at how we properly update our position estimate when we perform a prediction using the motion model:
+In other words, if you apply a *linear* operation to a Gaussian random variable, the result is also a Gaussian random variable. By applying these properties, let's look at how we properly update our position estimate when we perform a prediction using the motion model:
 
 $$
 \begin{align}
@@ -88,11 +88,11 @@ $$
 
 So it turns out updating our estimate of $$x$$ in the prediction step is pretty straightforward precisely because our motion model is linear. When this is not the case, we *cannot* use a regular Kalman filter (this is commonly dealt with by using the extended Kalman filter (EKF) or unscented Kalman filter (UKF), but that is beyond the scope of this post).
 
-An important result of the prediction step is that the variance of our estimate of $$x$$ has *increased*. It is the old variance plus some additional uncertainty caused by our noisy motion command. Intuitively this makes sense; we applied a noisy motion command so naturally we are less certain about where the robot is. Let's look at an example of PDFs of our estimate of $$x$$ before and after an application of the prediction step (see [this previous post](http://marcgallant.ca/2015/12/16/you-dont-know-where-your-robot-is/) for a review of PDFs):
+An important result of the prediction step is that the variance of our estimate of $$x$$ has *increased*. It is the old variance plus some additional uncertainty caused by our noisy motion command. Intuitively this makes sense; we applied a noisy motion command, so naturally we are less certain about where the robot is. Let's look at an example of PDFs of our estimate of $$x$$ before and after an application of the prediction step (see [this previous post](http://marcgallant.ca/2015/12/16/you-dont-know-where-your-robot-is/) for a review of PDFs):
 
 ![PDFs illustrating the prediction step of the Kalman filter](/images/kf_predict.png)
 
-The above example illustrates the two things the prediction does: it moves our estimate forward and increases the variance. You can imagine what would happen if we didn't have sensor to perform a correction step: the best we could do is just repeatedly perform predictions using our joystick commands. As a result, we would keep moving the estimate forward, but it would get more and more uncertain over time. This is called *dead reckoning*, and is usually only a suitable form of estimation over short distances.
+The above example illustrates the two things the prediction does: it moves our estimate forward and increases the variance. You can imagine what would happen if we didn't have a sensor to perform a correction step: the best we could do is just repeatedly perform predictions using our joystick commands. As a result, we would keep moving the estimate forward, but it would get more and more uncertain over time. This is called *dead reckoning*, and is usually only a suitable form of estimation over short distances.
 
 ## Correction
 
