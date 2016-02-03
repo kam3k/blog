@@ -65,7 +65,7 @@ Note that we are not sure if we started the robot at *exactly* $$x=0$$ m, so we 
 The following couple sections go into the details of these two steps.
 
 ## Prediction
-The prediction uses a *motion model* to predict the new state based on new inputs. In our case, it describes what happens to the position of the robot when you apply joystick commands. Given the position at the previous time step $$x_{k-1}$$ and the current velocity input by the joystick $$u_k$$, the predicted position of the robot $$x_k$$ is
+The prediction step uses a *motion model* to predict the new state based on new inputs. In our case, the prediction estimates what happens to the position of the robot when you apply joystick commands. Given the position at the previous time step $$x_{k-1}$$ and the current velocity input by the joystick $$u_k$$, the predicted position of the robot $$x_k$$ is
 
 $$
 x_k = x_{k-1} + t u_k,
@@ -92,9 +92,43 @@ An important result of the prediction step is that the variance of our estimate 
 
 ![PDFs illustrating the prediction step of the Kalman filter](/images/kf_predict.png)
 
-The above example illustrates the two things the prediction does: it moves our estimate forward and increases the variance. You can imagine what would happen if we didn't have a sensor to perform a correction step: the best we could do is just repeatedly perform predictions using our joystick commands. As a result, we would keep moving the estimate forward, but it would get more and more uncertain over time. This is called *dead reckoning*, and is usually only a suitable form of estimation over short distances.
+The above example illustrates the two things the prediction does: it moves our estimate forward in time and increases the variance. You can imagine what would happen if we didn't have a sensor to perform a correction step: the best we could do is just repeatedly perform predictions using our joystick commands. As a result, we would keep moving the estimate forward in time, but it would get more and more uncertain the longer we did this. This is called *dead reckoning*, and is usually only a suitable form of localization over short distances.
 
 ## Correction
+
+The correction step uses a *measurement model* to correct the prediction by using a sensor measurement. More specifically, the correction step compares our sensor measurement with *what we'd expect our measurement to be* given our current estimate of the robot's position. The measurement model calculates this expected measurement. For our robot, the measurement model is
+
+$$
+\hat{z}_k = w - x_k,
+$$
+
+where $$\hat{z}_k$$ is the expected measurement. For example, let's say after the prediction our estimate is $$\mu_{x,k} = 7.5$$ m with variance $$\sigma^2_{x,k} = 0.04$$ m$$^2$$. If the position of the wall is $$w = 10$$ m, our *expected measurement* would be $$10 - 7.5 = 2.5$$ m. Now suppose we use our sensor to get an *actual* measurement of the wall, and we get
+
+$$
+\mu_{z,k} = 2.62, \quad \sigma^2_{z,k} = 0.10.
+$$
+
+(Remember that the sensor measurements are modelled as Gaussian random variables.) We now have three choices for the position of the robot:
+
+1. Ignore the sensor and use the prediction ($$\mu_{x,k} = 7.5$$ m, $$\sigma^2_{x,k} = 0.04$$ m$$^2$$).
+2. Ignore the prediction and use sensor measurement ($$\mu_{x,k} = 10 - 2.62 = 7.38$$ m, $$\sigma^2_{x,k} = 0.10$$ m$$^2$$). Note that the uncertainty of the robot's position in this case is the variance of the sensor measurement.
+3. Somehow combine the prediction with the sensor measurement.
+
+The correction step of a Kalman filter performs choice #3, and does so in the *best possible way given the information available*. That's what makes the Kalman filter so useful!
+
+Alright, so we know we want the correction step to combine the prediction and the sensor measurement. A simple way to do this is by using the following equation:
+
+$$
+\mu_{x,k} \leftarrow \mu_{x,k} + \underbrace{K(z_k - \hat{z}_k)}_{\text{correction}}.
+$$
+
+The above equation replaces the predicted position $$x_k$$ with the prediction plus a correction term. That correction is the difference between the actual and predicted measurements, scaled by some value $$K$$. Let's take a look at a few scenarios to see how this works:
+
+- $$K = 0$$. The "corrected" prediction is just the prediction itself. The sensor measurement has no effect on the prediction. Put differently, setting $$K$$ to zero says we completely trust our prediction.
+- $$K = 1$$. The correction is equal to the difference between the actual and predicted measurements. This actually makes the corrected prediction equal to the measurement. Put differently, setting $$K$$ to one says we completely trust our measurement.
+- $$0 < K < 1$$. The correction is equal to some fraction of the difference between the actual and predicted measurements.
+
+So it seems that this equation can satisfy all three of our scenarios, and I've already told you that the Kalman filter combines the prediction and the sensor measurement. It does so by choosing the *best* value of $$K$$.
 
 ## Putting it all together
 
@@ -148,6 +182,8 @@ $$
 c_k = \frac{\partial z_k}{\partial x_k} = -1
 $$
 
+-->
+
 ## The Kalman filter
 
 $$
@@ -183,7 +219,6 @@ $$
 \sigma_{x,k}^2 \gets (1 + K_k)\sigma_{x,k}^2
 $$
 
--->
 
 ## Simulation
 
