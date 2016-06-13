@@ -5,7 +5,7 @@ comments: true
 date:   2016-01-28
 ---
 
-I've come across various instances of people asking for an intuitive introduction to the Kalman filter in the context of robotics. These people are often hobbyists, undergraduate students, or keen high school students trying to get their robot to properly combine various sensor information. I've even written some answers on the [Robotics Stack Exchange](http://robotics.stackexchange.com) helping people with various localization and mapping problems. These people are often referred to great references (e.g., [Probabilistic Robots](http://www.probabilistic-robotics.org)), but many give up in the first few chapters because of a lack of grasping what is really going on, or trouble with why something works. To this end, this post shows how a very basic Kalman filter works using a bottom-up approach. I use a simple one-dimensional robot to really try to get across *why* this fancy algorithm has been so popular over the years.
+I've come across various instances of people asking for an intuitive introduction to the Kalman filter in the context of robotics. These people are often hobbyists, undergraduate students, or keen high school students trying to get their robot to properly combine data from various sensors. I've even written some answers on the [Robotics Stack Exchange](http://robotics.stackexchange.com) helping people with various localization and mapping problems. These people are often referred to great references (e.g., [Probabilistic Robots](http://www.probabilistic-robotics.org)), but many give up in the first few chapters because of a lack of grasping what is really going on, or trouble with why something works. To this end, this post shows how a very basic Kalman filter works using a bottom-up approach. I use a simple one-dimensional robot to really try to get across *why* this fancy algorithm has been so popular over the years.
 
 I should point out that this is not a mathematically rigourous treatment of the Kalman filter. I'll leave that to the textbooks. What I hope to accomplish here is a basic understanding of the fundamentals, and to leave the reader with an appreciation of the usefulness of this beautiful algorithm.
 
@@ -13,7 +13,7 @@ I should point out that this is not a mathematically rigourous treatment of the 
 
 ## Problem setup
 
-The problem we are trying to solve is illustrated below. We have a robot that can drive forward towards a wall given your joystick commands $$u$$ (e.g., $$u = 2.3$$ m/s). The robot is equipped with a sensor capable of measuring the distance $$z$$ to the wall (e.g., $$z = 8.31$$ m), and know the position of the wall $$w$$ relative to the start (e.g., $$w = 10.0$$ m). You place the robot near the start and command it to start moving forward. Given all this information, you are interested in estimating the position of the robot $$x$$. 
+The problem we are trying to solve is illustrated below. We have a robot that can drive forward towards a wall given your joystick commands $$u$$ (e.g., $$u = 2.3$$ m/s). The robot is equipped with a sensor capable of measuring the distance $$z$$ to the wall (e.g., $$z = 8.31$$ m), and you know the position of the wall $$w$$ relative to the start (e.g., $$w = 10.0$$ m). You place the robot near the start and command it to start moving forward. Given all this information, you are interested in estimating the position of the robot $$x$$.
 
 ![Driving a robot towards a wall](/images/random_variable_example.png)
 
@@ -43,14 +43,14 @@ z \sim \mathcal{N}(\mu_z, \sigma_z^2).
 $$
 
 ## Assumptions
-Before we continue, I should note that the following Kalman filter makes a couple (reasonable) assumptions. 
+Before we continue, I should note that the following Kalman filter makes a couple of (reasonable) assumptions.
 
-1. All measurements are *independent*. In other words, previous measurements have no effect whatsoever on future measurements. For example, if your sensor measures $$z=8.45$$ m, this does not influence the next value of $$z$$. 
+1. All measurements are *independent*. In other words, previous measurements have no effect whatsoever on future measurements. For example, if your sensor measures $$z=8.45$$ m, this does not influence the next value of $$z$$.
 
 2. Gaussian distributions are a good representation of $$x$$, $$u$$, and $$z$$. For example, if our robot was standing still and our sensor took thousands of measurements, we'd expect those measurements to be normally distributed. This is usually a fair assumption because the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem).
 
 ## Our strategy for estimating $$x$$
-Before getting into the mathematical details, I'm going to discuss the general strategy of how we are going to proceed. First, we're going to say our initial estimate of $$x$$ is the location at which (we think) the robot starts. Let's say there is a "starting line" drawn on the ground at $$x=0$$ where we place our robot. So at this point we have (for example)
+Before getting into the details, I'm going to discuss the general strategy of how we are going to proceed. First, we're going to say our initial estimate of $$x$$ is the location at which (we think) the robot starts. Let's say there is a "starting line" drawn on the ground at $$x=0$$ where we place our robot. So at this point we have (for example)
 
 $$
 \mu_{x,0} = 0 \text{ m}, \quad \sigma_{x,0}^2 = 0.05^2 \text{ m}^2.
@@ -60,7 +60,7 @@ Note that we are not sure if we started the robot at *exactly* $$x=0$$ m, so we 
 
 1. *Predict* the new position of the robot by integrating the speed we commanded with the joystick. Think of it this way: if the robot was at $$x=8.1$$ m and we commanded it to go $$0.3$$ m/s for one second, a good prediction of where the robot is now would be $$x=8.4$$ m.
 
-2. *Correct* our prediction with a new measurement by the sensor. Let's say our prediction was $$x = 8.4$$ m, and we know the wall is $$10$$ m from the start. Now we take a measurement with our sensor, and we get (for example) $$z = 1.67$$ m. Well given that our wall is at $$w = 10$$ m, a measurement of $$z = 1.67$$ m implies that we are at $$x = 10 - 1.67 = 8.33$$ m, which is different from our prediction. So which value do we use? The answer is *both*. We combine the two estimates, using their respective uncertainties to determine how much we "believe" one versus the other.
+2. *Correct* our prediction with a new measurement by the sensor. Let's say our prediction was $$x = 8.4$$ m, and we know the wall is $$10$$ m from the start. Now we take a measurement with our sensor, and we get (for example) $$z = 1.67$$ m. Well, given that our wall is at $$w = 10$$ m, a measurement of $$z = 1.67$$ m implies that we are at $$x = 10 - 1.67 = 8.33$$ m, which is different from our prediction. So which value do we use? The answer is *both*. We combine the two estimates, using their respective uncertainties to determine how much we "believe" one versus the other.
 
 The following couple sections go into the details of these two steps.
 
@@ -96,39 +96,122 @@ The above example illustrates the two things the prediction does: it moves our e
 
 ## Correction
 
-The correction step uses a *measurement model* to correct the prediction by using a sensor measurement. More specifically, the correction step compares our sensor measurement with *what we'd expect our measurement to be* given our current estimate of the robot's position. The measurement model calculates this expected measurement. For our robot, the measurement model is
+Let's start this section with a simple example. Suppose that after the prediction step, your estimate of the robot's position is
+
+$$
+\mu_{x,k} = 7.5\text{ m}, \quad \sigma^2_{x,k} = 0.04\text{ m}^2.
+$$
+
+Your robot now uses its sensor to measure the distance to the wall, giving the measurement
+
+$$
+\mu_{z,k} = 2.62\text{ m}, \quad \sigma^2_{z,k} = 0.10\text{ m}^2.
+$$
+
+As mentioned in the problem setup, you know the position of the wall relative to the start. Let's say it is $$w = 10$$ m. We now have three choices for the estimate of the position of the robot:
+
+1. Ignore the sensor and use the prediction ($$\mu_{x,k} = 7.5$$ m, $$\sigma^2_{x,k} = 0.04$$ m$$^2$$).
+2. Ignore the prediction and use sensor measurement. Since we know the position of the wall, we can estimate the position of the robot based purely on our sensor measurement. This estimate is $$\mu_{x,k} = 10 - 2.62 = 7.38$$ m, $$\sigma^2_{x,k} = (-1)^2 0.10 = 0.10$$ m$$^2$$. Note that this function (10 - $$z_k$$) is a linear function applied to a Gaussian random variable, so the result is also a Gaussian random variable.
+3. Somehow combine the prediction with the sensor measurement.
+
+The correction step of a Kalman filter performs choice #3, and does so in the *best possible way given the information available*. That's what makes the Kalman filter so useful!
+
+Let's intuitively think about how we might mix the prediction and the sensor measurement. In the above example, when we ignored the sensor, we got $$\mu_{x,k} = 7.5$$, and when we ignored the prediction, we got $$\mu_{x,k} = 7.38$$. So it would make sense that our combined estimate is somewhere between these two values. Why are these two estimates $$0.12$$ m apart? One way to look at it is by comparing the sensor measurement with *what we'd expect the measurement to be* given the current prediction. In other words, before we even took a sensor measurement, what would be the best guess of what our sensor would tell us? The answer is quite intuitive:
 
 $$
 \hat{z}_k = w - x_k,
 $$
 
-where $$\hat{z}_k$$ is the expected measurement. For example, let's say after the prediction our estimate is $$\mu_{x,k} = 7.5$$ m with variance $$\sigma^2_{x,k} = 0.04$$ m$$^2$$. If the position of the wall is $$w = 10$$ m, our *expected measurement* would be $$10 - 7.5 = 2.5$$ m. Now suppose we use our sensor to get an *actual* measurement of the wall, and we get
+where $$\hat{z}_k$$ is called the *expected measurement* and this equation is called the *measurement model*. Keeping in mind that we are applying linear operations to Gaussian random variables, let's plug in the numbers from our example:
+
+$$
+\mu_{\hat{z}, k} = 10 - 7.5 = 2.5\text{ m}, \quad
+\sigma^2_{\hat{z}, k} = (-1)^2 0.04 = 0.04\text{ m}^2.
+$$
+
+Now check this out: the difference $$s_k$$ between the actual measurement $$z_k$$ and the expected measurement $$\hat{z}_k$$ is
+
+$$
+\begin{align}
+\mu_{s,k} &= \mu_{z,k} - \mu_{\hat{z},k} = 2.62 - 2.5 = 0.12 \text{ m} \\
+\sigma^2_{s,k} &= (1)^2\sigma^2_{z,k} + (-1)^2\sigma^2_{\hat{z},k} = 0.10 + 0.04 = 0.14\text{ m}^2.
+\end{align}
+$$
+
+In other words, *the difference between the actual and expected measurement is directly related to the difference between the prediction-only and sensor-only position estimates*. In this example, this difference *is* the difference between the estimates, but that's not always the case. For example, let's say instead the sensor measured the angle between the robot and the top of the wall (i.e., as you get closer to the wall, this angle gets larger). In this scenario, we can compare the expected and actual measurements of the angle, and their difference will be directly related (but not equal to) the difference between the prediction-only and sensor-only estimates. Coming back to our example, here is an illustration describing what's going on:
+
+![Driving a robot towards a wall](/images/correction_example.png)
+
+So in our example, we can clearly see how $$s$$ is both the difference between the actual and expected measurements and difference between the prediction-only and sensor-only position estimates (once again, these are normally directly related but not necessarily the same).
+
+From the above figure, note that if we want to combine the prediction-only and sensor-only position estimates, we can do so by calculating some fraction of $$s$$ and adding it to the sensor-only measurement. However, the usual convention of the Kalman filter has us adding a fraction of $$s$$ to the *prediction-only* measurement; i.e.,
+
+$$
+x_{\text{pred.},k} \leftarrow x_{\text{pred.},k} + Ks_k,
+$$
+
+where $$K$$ is called the *Kalman gain*. For this correction to work, we'd expect $$-1 \leq K \leq 0$$. If $$K = 0$$, we'll just get the prediction-only estimate, and if $$K = -1$$, we'll just get the sensor-only estimate. So how in the world do be pick $$K$$? Let's just say it's a good thing we've been keeping track of variances. Recall that we have two "measurements": the expected measurement $$\hat{z}_k$$ and the actual measurement $$z_k$$. We know that their difference is directly related to the difference between the prediction-only and sensor-only position estimates, and we know the variances of these measurements (we calculated the expected measurement variance above, and the actual measurement variance is known from the sensor):
+
+$$
+\sigma^2_{\hat{z},k} = 0.04\text{ m}^2, \quad \sigma^2_{z,k} = 0.10\text{ m}^2.
+$$
+
+The value of $$K$$ is the *relative size of the expected measurement variance compared to the correction variance*. In other words,
+
+$$
+K = (-1)\frac{\sigma^2_{\hat{z},k}}{\sigma^2_{\hat{z},k} + \sigma^2_{z,k}} = \frac{-\sigma^2_{\hat{z},k}}{\sigma^2_{s,k}} = \frac{-0.04}{0.14} \approx -0.2857.
+$$
+
+It's worth breaking down the above equation to really understand where it came from before we move on.
+
+
+
+
+
+<!---
+The correction step of  uses a *measurement model* to correct the prediction by using a sensor measurement. More specifically, the correction step compares the sensor measurement with *what we'd expect the measurement to be* given our current estimate of the robot's position. The measurement model calculates this expected measurement. For our robot, the measurement model is
+
+$$
+\hat{z}_k = w - x_k,
+$$
+
+where $$\hat{z}_k$$ is the expected measurement. Remember that because $$x_k$$ is a Gaussian random variable, $$\hat{z}_k$$ is one too (with mean $$\mu_{\hat{z},k}$$ and variance $$\sigma^2_{\hat{z},k}$$) because it is the result of performing linear operations on a Gaussian random variable.
+
+Let's do a simple example. Suppose that after the prediction our estimate is $$\mu_{x,k} = 7.5$$ m with variance $$\sigma^2_{x,k} = 0.04$$ m$$^2$$. If the position of the wall is $$w = 10$$ m, our *expected measurement* would be
+
+$$
+\mu_{\hat{z}, k} = 10 - 7.5 = 2.5\text{ m}, \quad
+\sigma^2_{\hat{z}, k} = (-1)^2 0.04 = 0.04\text{ m}^2.
+$$
+
+
+$$10 - 7.5 = 2.5$$ m. Now suppose we use our sensor to get an *actual* measurement of the wall, and we get
 
 $$
 \mu_{z,k} = 2.62, \quad \sigma^2_{z,k} = 0.10.
 $$
 
-(Remember that the sensor measurements are modelled as Gaussian random variables.) We now have three choices for the position of the robot:
+(Remember that the sensor measurements are modelled as Gaussian random variables.) We now have three choices for the estimate of the position of the robot:
 
 1. Ignore the sensor and use the prediction ($$\mu_{x,k} = 7.5$$ m, $$\sigma^2_{x,k} = 0.04$$ m$$^2$$).
 2. Ignore the prediction and use sensor measurement ($$\mu_{x,k} = 10 - 2.62 = 7.38$$ m, $$\sigma^2_{x,k} = 0.10$$ m$$^2$$). Note that the uncertainty of the robot's position in this case is the variance of the sensor measurement.
 3. Somehow combine the prediction with the sensor measurement.
 
-The correction step of a Kalman filter performs choice #3, and does so in the *best possible way given the information available*. That's what makes the Kalman filter so useful!
-
-Alright, so we know we want the correction step to combine the prediction and the sensor measurement. A simple way to do this is by using the following equation:
+The correction step of a Kalman filter performs choice #3, and does so in the *best possible way given the information available*. That's what makes the Kalman filter so useful! More specifically, it combines the prediction and sensor measurement by using the following correction:
 
 $$
-\mu_{x,k} \leftarrow \mu_{x,k} + \underbrace{K(z_k - \hat{z}_k)}_{\text{correction}}.
+x_k \leftarrow x_k + \underbrace{K(z_k - \hat{z}_k)}_{\text{correction}}.
 $$
 
-The above equation replaces the predicted position $$x_k$$ with the prediction plus a correction term. That correction is the difference between the actual and predicted measurements, scaled by some value $$K$$. Let's take a look at a few scenarios to see how this works:
+In other words, it adjusts the prediction by the difference between the actual and predicted measurements, scaled by some value $$K$$. Let's take a look at a few scenarios to see how this works:
 
 - $$K = 0$$. The "corrected" prediction is just the prediction itself. The sensor measurement has no effect on the prediction. Put differently, setting $$K$$ to zero says we completely trust our prediction.
 - $$K = 1$$. The correction is equal to the difference between the actual and predicted measurements. This actually makes the corrected prediction equal to the measurement. Put differently, setting $$K$$ to one says we completely trust our measurement.
 - $$0 < K < 1$$. The correction is equal to some fraction of the difference between the actual and predicted measurements.
 
 So it seems that this equation can satisfy all three of our scenarios, and I've already told you that the Kalman filter combines the prediction and the sensor measurement. It does so by choosing the *best* value of $$K$$.
+
+-->
 
 ## Putting it all together
 
@@ -184,7 +267,6 @@ $$
 
 -->
 
-## The Kalman filter
 
 $$
 \begin{align}
@@ -219,7 +301,7 @@ $$
 \sigma_{x,k}^2 \gets (1 + K_k)\sigma_{x,k}^2
 $$
 
-
+<!---
 ## Simulation
 
 <pre>
@@ -242,7 +324,7 @@ immutable UnitAxis <: Directional
     κ::Vector{Float64}
     λ::Float64
 
-    function UnitAxis(κ, λ) 
+    function UnitAxis(κ, λ)
         length(κ) == 2 || error("Must be a 2-vector.")
         κ_norm, λ_norm = normalize(κ, λ)
         λ_norm >= zero(λ_norm) ? new(κ_norm, λ_norm) : new(-κ_norm, -λ_norm)
@@ -253,10 +335,11 @@ immutable UnitDirection <: Directional
     κ::Vector{Float64}
     λ::Float64
 
-    function UnitDirection(κ, λ) 
+    function UnitDirection(κ, λ)
         length(κ) == 2 || error("Must be a 2-vector.")
         κ_norm, λ_norm = normalize(κ, λ)
         new(κ_norm, λ_norm)
     end
 end
 </code></pre>
+-->

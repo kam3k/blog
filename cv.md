@@ -24,10 +24,14 @@ I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing o
 
 # Industry and Academic Positions Held
 
+**Technical Consultant**, Peck Tech Consulting Ltd., Kingston, ON; Jan.-Apr. 2016
+
+* Developed and implemented several improvements to a large-scale [underground mapping algorithm](http://ugpsrapidmapper.com)
+
 **Teaching Assistant**, Department of Mechanical and Aerospace Engineering, Carleton University, Ottawa, ON; 2009–2011, and Department of Electrical and Computer Engineering, Queen’s University, Kingston, ON; 2012–present
 
 * Developed and taught laboratories and tutorials for seven different engineering courses
-* Won Teaching Assistant of the Year in 2013 and 2014
+* Won Teaching Assistant of the Year in 2013, 2014, and 2015
 
 **Young Graduate Trainee**, Research and Technology Group, [European Space Operations Centre](http://www.esa.int/About_Us/ESOC), European Space Agency, Darmstadt, Germany; Sept. 2011–Aug. 2012
 
@@ -43,28 +47,28 @@ I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing o
 **Research Technician**, Robotic Vehicles Group, Department of Mechanical and Aerospace Engineering, Carleton University, Ottawa, ON; May 2009–Sept. 2009
 
 * Assisted in the development of a mobile platform for underground mapping of mines
-* Researched the suitability of using inertial measurement units on mobile robots in an underground environment
-* Designed and built various mounts, stands and braces in a metal shop to outfit a vehicle with navigation sensors
+* Designed and built various components in a metal shop to outfit a vehicle with navigation sensors
 
 **Research Officer Assistant**, [Institute for Aerospace Research](http://www.nrc-cnrc.gc.ca/eng/rd/aerospace/index.html), National Research Council Canada, Ottawa, ON; May 2007–Aug. 2008
 
 * Researched and wrote literature reviews on aerospace materials and manufacturing methods
-* Performed extensive metallography including formal training and numerous hours operating a scanning electron microscope
-* Co-authored several conference papers and internal technical publications
+* Performed extensive metallography, material testing (tensile, fatigue, creep), and microscopy (including numerous hours operating a scanning electron microscope)
+* Wrote and presented two papers at a national conference
 
 # Skills & Qualifications
 
 **Technical**
 
 * Extensive experience with sensor integration and mobile robot operation
-* Applied knowledge in probabilistic mobile robotics, including guidance (e.g., A\*, D\*), navigation and mapping (e.g., EKF, UKF, graph-based SLAM), and control (e.g., path-following/tracking)
+* Applied knowledge in probabilistic mobile robotics, including guidance (e.g., A\*, D\*), navigation and mapping (e.g., EKF, UKF, graph-based SLAM), and control (e.g., path-following/tracking, pose stabilization)
+* Theoretical and practical experience modelling and using various types of sensors (e.g., LiDAR, time-of-flight cameras, GPS, inertial measurement units (IMUs), encoders, magnetometers, SONAR)
 * Background in autonomous science, spacecraft systems, and payload design
 
 **Communication**
 
 * Native English speaker, intermediate French speaker, beginner German speaker
 * Confident public speaker, excellent technical writing skills
-* Extensive working knowledge of \LaTeX, Microsoft Office
+* Extensive working knowledge of LaTeX, Microsoft Office
 
 **Programming and Computing**
 
@@ -74,6 +78,7 @@ I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing o
 
 # Honours & Awards
 
+* *First prize*, NSERC Canadian Field Robotics Network (NCFRN) Ogopogo's Lair Competition, 2016
 * *Alexander Graham Bell Canada Graduate Scholarship (CGS D)*, NSERC, 2014-2016
 * *Teaching Assistant of the Year*, Department of Electrical and Computer Engineering, Queen's University, 2013 & 2014
 * *Ph.D. Fellowship Award*, NSERC CREATE Technologies and Techniques for Earth and Space Exploration, 2012–2014
