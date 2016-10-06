@@ -3,13 +3,13 @@ layout:    page
 title:     Curriculum Vitae
 permalink: /cv/
 ---
-I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing on state estimation in robotics. I have extensive experience implementing Kalman filters, simultaneous localization and mapping (SLAM), and other algorithms on real robotic hardware. I am a lifelong learner (whether it's learning an [exciting new programming language](http://julialang.org) or [programming state-of-the-art hardware](https://www.google.com/atap/project-tango/)), and I love to teach others in an [intuitive way](/2015/10/14/how-i-learn/).
+I am a software engineer at [Quanergy Systems, Inc.](http://www.quanergy.com), where I do work related to mapping and localization. I have extensive experience implementing Kalman filters, simultaneous localization and mapping (SLAM), and other algorithms on real robotic hardware. I am a lifelong learner (whether it's learning an [exciting new programming language](http://julialang.org) or [programming state-of-the-art hardware](https://www.google.com/atap/project-tango/)), and I love to teach others in an [intuitive way](/2015/10/14/how-i-learn/).
 
 # Education
 
-**Ph.D., Electrical and Computer Engineering,** [Queen's University](http://www.queensu.ca), Kingston, ON; 2012-present
+**Ph.D., Electrical and Computer Engineering,** [Queen's University](http://www.queensu.ca), Kingston, ON; 2012-2016
 
-* *Research topic:* Mobile geotechnical mapping using three-dimensional LiDAR and manifold-based simultaneous localization and mapping
+* *Thesis title:* Axis Mapping: The Estimation of Surface Orientations and its Applications in Vehicle Localization and Structural Geology
 * *Supervisor:* Dr. Joshua Marshall
 
 **M.A.Sc., Mechanical and Aerospace Engineering,** [Carleton University](http://www.carleton.ca), Ottawa, ON; 2009-2011
@@ -24,11 +24,15 @@ I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing o
 
 # Industry and Academic Positions Held
 
-**Technical Consultant**, Peck Tech Consulting Ltd., Kingston, ON; Jan.-Apr. 2016
+**Software Engineer**, [Quanergy Systems, Inc.](http://www.quanergy.com), Ottawa, ON; Aug. 2016-present
+
+* Working on state-of-the-art mapping and localization algorithms using newly developed solid-state LiDAR
+
+**Technical Consultant**, [Peck Tech Consulting Ltd.](http://pecktech.ca), Kingston, ON; Jan.-Apr. 2016
 
 * Developed and implemented several improvements to a large-scale [underground mapping algorithm](http://ugpsrapidmapper.com)
 
-**Teaching Assistant**, Department of Mechanical and Aerospace Engineering, Carleton University, Ottawa, ON; 2009–2011, and Department of Electrical and Computer Engineering, Queen’s University, Kingston, ON; 2012–present
+**Teaching Assistant**, [Department of Mechanical and Aerospace Engineering](https://carleton.ca/mae/), Carleton University, Ottawa, ON; 2009–2011, and Department of Electrical and Computer Engineering, Queen’s University, Kingston, ON; 2012–2016
 
 * Developed and taught laboratories and tutorials for seven different engineering courses
 * Won Teaching Assistant of the Year in 2013, 2014, and 2015
@@ -39,7 +43,7 @@ I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing o
 * Helped train an astronaut on the operation of mission software
 * Aided development of benchmarking software for automated planning and scheduling algorithms
 
-**Research Assistant**, Department of Mechanical and Aerospace Engineering, Carleton University, Ottawa, ON; 2009–2011
+**Research Assistant**, [Department of Mechanical and Aerospace Engineering](https://carleton.ca/mae/), Carleton University, Ottawa, ON; 2009–2011
 
 * Contributed to the development of the guidance, navigation and control subsystem on the planetary rover prototype Kapvik under funding from the Canadian Space Agency 
 * Performed sensor implementation for a LiDAR and tilt-unit, and helped construct a test platform on a research robot, including the development of guidance and control algorithms 
@@ -87,3 +91,6 @@ I am a Ph.D. candidate at [Queen's university](http://www.queensu.ca) focusing o
 * *Faculty Scholarship*, Carleton University, 2004–2009
 * *ASM International Student Poster Competition Award*, Ottawa Chapter, 2008
 * *Best Undergraduate Poster*, The Metallurgical Society of CIM, 2008
+
+# Publications
+For an up-to-date list of my publications, please email me at `marc.j.gallant@gmail.com`.
