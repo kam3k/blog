@@ -3,14 +3,15 @@ layout:    page
 title:     Curriculum Vitae
 permalink: /cv/
 ---
-I am a senior software engineer at [Quanergy Systems, Inc.](http://www.quanergy.com), where I do work related to mapping and localization. I have extensive experience implementing various algorithms processing point clouds, Kalman filters, simultaneous localization and mapping (SLAM), and other algorithms using real robotic hardware. I am a lifelong learner (whether it's learning an [exciting new programming language](http://julialang.org) or [programming state-of-the-art hardware](https://www.google.com/atap/project-tango/)), and I love to teach others in an [intuitive way](/2015/10/14/how-i-learn/).
+I am a software architect at [Cepton](http://www.cepton.com), where I manage a team designing and implementing lidar perception software. I have extensive experience implementing various algorithms processing point clouds, Kalman filters, simultaneous localization and mapping (SLAM), and other algorithms using real robotic hardware. I am a lifelong learner (whether it's learning an [exciting new programming language](http://julialang.org) or [using state of the art sensors](https://www.cepton.com/products.html)), and I love to teach others in an [intuitive way](/2015/10/14/how-i-learn/).
 
 # Skills & Qualifications
 
 **Technical**
 
+* Several years of academic and industry experience designing and implementing lidar-based detection, tracking, classification, and mapping solutions
 * Applied knowledge of probabilistic mobile robotics, including guidance (e.g., A\*, D\*), navigation (e.g., EKF, UKF, graph-based SLAM), control (e.g., path-following/tracking, pose stabilization), and perception (e.g., detecting and tracking multiple objects)
-* Theoretical and practical experience modelling and using various types of sensors (e.g., LiDAR, time-of-flight cameras, GPS, IMUs, encoders, magnetometers, SONAR)
+* Theoretical and practical experience modelling and using various types of sensors (e.g., lidar, time-of-flight cameras, GPS, IMUs, encoders, magnetometers, SONAR)
 
 **Communication**
 
@@ -21,13 +22,17 @@ I am a senior software engineer at [Quanergy Systems, Inc.](http://www.quanergy.
 
 * Several years experience designing and implementing software using C++, including a strong familiarity with modern C++ features (e.g., smart pointers, lambdas, move semantics, etc.)
 * Experience writing software using [Julia](http://julialang.org), Python, and MATLAB/Simulink
-* Comfortable using [Git](https://git-scm.com), [Point Cloud Library (PCL)](http://pointclouds.org), [Robot Operating System (ROS)](http://www.ros.org), [Vim](http://www.vim.org), and various other software and frameworks 
+* Comfortable using [Git](https://git-scm.com), [Point Cloud Library (PCL)](http://pointclouds.org), [Robot Operating System (ROS)](http://www.ros.org), [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page), [CMake](https://cmake.org/), [Vim](http://www.vim.org), and various other software and frameworks 
 
 # Industry and Academic Positions Held
 
-**Senior Software Engineer**, [Quanergy Systems, Inc.](http://www.quanergy.com), Ottawa, ON; Aug. 2016-present
+**Software Architect**, [Cepton Technologies, Inc](http://www.cepton.com), Ottawa, ON; Mar. 2019-present
 
-* Leading the design and implementation (C++) of various LiDAR-based algorithms for deployment in large-scale installations, including detection and tracking of multiple objects (DATMO) and simultaneous localization and mapping (SLAM).
+* Leading a team in the design, implementation, and testing of an object detection, tracking, and classification system, combining data from multiple lidars and multiple edge computers. From the first line of code to a product in the hands of customers. The product won an innovation award at [CES](https://en.wikipedia.org/wiki/Consumer_Electronics_Show) 2020.
+
+**Senior Software Engineer**, [Quanergy Systems, Inc.](http://www.quanergy.com), Ottawa, ON; Aug. 2016-Mar. 2019
+
+* Lead the design and implementation (C++) of various lidar-based algorithms for deployment in large-scale installations, including detection and tracking of multiple objects (DATMO) and simultaneous localization and mapping (SLAM).
 
 **Technical Consultant**, [Peck Tech Consulting Ltd.](http://pecktech.ca), Kingston, ON; Jan.-Apr. 2016
 
@@ -46,7 +51,7 @@ I am a senior software engineer at [Quanergy Systems, Inc.](http://www.quanergy.
 **Research Assistant**, [Department of Mechanical and Aerospace Engineering](https://carleton.ca/mae/), Carleton University, Ottawa, ON; 2009–2011
 
 * Contributed to the development of the guidance, navigation and control subsystem on the planetary rover prototype Kapvik under funding from the Canadian Space Agency 
-* Performed sensor implementation for a LiDAR and tilt-unit, and helped construct a test platform on a research robot, including the development of guidance and control algorithms 
+* Performed sensor implementation for a lidar and tilt-unit, and helped construct a test platform on a research robot, including the development of guidance and control algorithms 
 
 # Education
 

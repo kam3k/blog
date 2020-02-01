@@ -33,4 +33,4 @@ The key components are still there. A robot drives through an environment and me
 
 I have shifted things from 1D into 2D. The sensor used by the robot gets more complex (in this case, it is a laser scanner), and there are many more objects. 
 
-So by now you might be asking, "but how do I know what are reasonable simplifications to make when I don't understand the topic?". That's a great question, and it is exactly what I am trying to address in this blog. I am trying to help first-time learners understand the big picture of how different topics work by laying out the path of simplified problems. I hope this approach works for you.
+So by now you might be asking, "but how do I know what are reasonable simplifications to make when I don't understand the topic?". That's a great question, and is one of the things I am trying to address in this blog. I am trying to help first-time learners understand the big picture of how different topics work by laying out the path of simplified problems. I hope this approach works for you.
