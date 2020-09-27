@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  You don't know where your robot is
-comments: true
+comments: false
 date:   2015-12-16
 ---
 

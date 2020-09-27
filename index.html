@@ -4,16 +4,8 @@ layout: default
 
 <div class="home">
     <ul class="posts">
-        {% for post in site.posts limit:5 %}
-            <li>
-              <span>{{ post.date | date: site.date_format }}</span>
-              <a href="{{ post.url }}"><h2 class="blog-excerpt-headers">{{ post.title }}</h2></a>
-              {{ post.excerpt | truncatewords: 50}}
-            </li>
-            <br>
-         {% endfor %}
+        {% for post in site.posts %}
+        <li><span>{{ post.date | date: site.date_format }}</span><a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></li>
+        {% endfor %}
     </ul>
 </div>
-
-<ul>
-</ul>

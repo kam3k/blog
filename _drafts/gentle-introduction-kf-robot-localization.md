@@ -1,100 +1,280 @@
 ---
 layout: post
-title: A gentle introduction to robot localization with a Kalman filter
-comments: true
+title: A gentle introduction to the Kalman filter
+comments: false
 date:   2016-01-28
 ---
 
-I've come across various instances of people asking for an intuitive introduction to the Kalman filter in the context of robotics. These people are often hobbyists, undergraduate students, or keen high school students trying to get their robot to properly combine data from various sensors. I've even written some answers on the [Robotics Stack Exchange](http://robotics.stackexchange.com) helping people with various localization and mapping problems. These people are often referred to great references (e.g., [Probabilistic Robots](http://www.probabilistic-robotics.org)), but many give up in the first few chapters because of a lack of grasping what is really going on, or trouble with why something works. To this end, this post shows how a very basic Kalman filter works using a bottom-up approach. I use a simple one-dimensional robot to really try to get across *why* this fancy algorithm has been so popular over the years.
+I've come across various instances of people asking for an intuitive introduction to the Kalman filter, often in the context of robotics. These people are often hobbyists, undergraduate students, or keen high school students trying to get their robot to properly combine data from various sensors. I've even written some answers on the [Robotics Stack Exchange](http://robotics.stackexchange.com) helping people with various localization and mapping problems. These people are often referred to great references (e.g., [Probabilistic Robots](http://www.probabilistic-robotics.org)), but many give up in the first few chapters because of a lack of grasping what is really going on, or trouble with why something works. To this end, this post shows how a very basic Kalman filter works using a bottom-up approach. I use a simple one-dimensional robot to really try to get across *why* this fancy algorithm has been so popular over the years.
 
 I should point out that this is not a mathematically rigourous treatment of the Kalman filter. I'll leave that to the textbooks. What I hope to accomplish here is a basic understanding of the fundamentals, and to leave the reader with an appreciation of the usefulness of this beautiful algorithm.
 
 ## Prerequisities
 
+You understand that in the real world, anything you measure or are estimating is often represented by a random variable. That is, in the field of mobile robotics, [you don't know where your robot is]({% post_url 2015-12-16-you-dont-know-where-your-robot-is %}). It is helpful if you know what a mean and standard deviation are. You should be able to do simple arithmetic (addition, subtraction, multiplication, division) and understand simple equations and how to manipulate them using basic algebra (e.g., "move" $$x$$ to the other side of the equal sign by subtracting it from both sides).
+
 ## Problem setup
 
-The problem we are trying to solve is illustrated below. We have a robot that can drive forward towards a wall given your joystick commands $$u$$ (e.g., $$u = 2.3$$ m/s). The robot is equipped with a sensor capable of measuring the distance $$z$$ to the wall (e.g., $$z = 8.31$$ m), and you know the position of the wall $$w$$ relative to the start (e.g., $$w = 10.0$$ m). You place the robot near the start and command it to start moving forward. Given all this information, you are interested in estimating the position of the robot $$x$$.
+An in-fashion application of localizing a robot using a Kalman filter is in the development of driverless cars. The car needs to know where in the world it is and how it's oriented with great accuracy so it can safely drive around a city, for example. This is a really complicated problem. There are bicycles, pot holes, pedestrians, hills, speed limits, weather, lighting changes, other vehicles, and so on. The driverless car itself may have laser scanners, GPS, cameras, radar, and wheel encoders among other sensors. Although localizing a driverless car can be solved with a Kalman filter, it is much too involved for an introduction like this one. So we're going to greatly simplify the problem but keep the same approach: combining sensor data and information about the world to localize a robot.
+
+The simplified problem we will try to solve is illustrated below. We have a robot that can drive forward towards a wall. This wall is a landmark in the environment with a known location, similar to how a driverless car may use a pre-constructed map of buildings and other objects to help it navigate. Since we are focusing on estimating where the robot is (localization problem) and not how we should drive it (control problem), let's pretend you are standing somewhere with a joystick that lets you adjust the speed of the robot. The robot has a sensor that gives you a noisy measurement of how far it is from the wall. As you drive it, you want to estimate how far your robot has travelled; that is, its current position relative to the start. More formally, you are trying to estimate the *state* $$x$$ (the position of the robot) given
+
+- the *command* $$u$$ (your joystick command);
+- the *map* $$w$$ (your prior knowledge of the environment, the position of the wall);
+- the *measurement* $$z$$ (the sensor measurement of the environment); and
+- the *initial state* $$x_0$$ (the initial position of the robot).
 
 ![Driving a robot towards a wall](/images/random_variable_example.png)
 
-How do you combine all of this information to estimate $$x$$? This is where the Kalman filter comes in. It combines
+## Why use a Kalman filter?
 
-- your joystick commands $$u$$;
-- the laser measurements $$z$$;
-- the known position of the wall $$w$$; and
-- the initial position of the robot $$x_0$$
+Maybe at this point you're thinking, why do I need a Kalman filter here? This problem is easy! If you know where the wall is (e.g., $$w=10$$ m) and you have a sensor that can measure the current position of the wall (e.g., $$z=3$$ m), then we can just directly calculate the position of the robot (e.g., $$x=(10\text{ m})-(3\text{ m})=7\text{ m }$$). Sure, but consider the situation where your sensor has a lot of noise, and perhaps can only measure the position of the wall with a standard deviation of $$1$$ metre. Then the best you can do (assuming your knowledge of the wall's position is perfect) is limited by the noise in the sensor.
 
-to come up with an estimate of $$x$$. The quantity we are trying to estimate ($$x$$ in this case) is commonly referred to as the *state*. As discussed in a [previous post](http://marcgallant.ca/2015/12/16/you-dont-know-where-your-robot-is/), you can never know for sure what $$x$$ is. Instead you use a Gaussian distribution with mean $$\mu_x$$ and variance $$\sigma_x^2$$ to represent $$x$$ as a continuous random variable. Another way to write this is
+But wait! If you are setting the speed of the robot with the joystick, you can just time how long it has been driving, then its position is the product of its speed and the elapsed time (i.e., $$x=ut$$ for elapsed time $$t$$). For example, if you've commanded the robot to go $$2$$ metres per second for $$5$$ seconds, its position is $$(2\text{ m/s})(5\text{ s})=10\text{ m}$$. Unfortunately, here I come again to burst your bubble, but who said that the robot goes at exactly the speed you commanded it? Any imperfection in the robot (e.g., slightly flat tires), joystick (e.g., somebody ate cheetos before using it and it sticks a bit), or your timer (I hope you weren't just using a stopwatch) and your estimate is wrong. Not only wrong, but it gets worse over time. If the robot was actually driving at $$2.1$$ metres per second, after $$5$$ seconds you're off by at least $$0.5$$ metres. And after $$20$$ seconds, it's $$2$$ metres, and so on.
 
-$$
-x \sim \mathcal{N}(\mu_x, \sigma_x^2).
-$$
+And now we've arrived at brilliant idea number three. You combine the two approaches above. You notice that over short distances, the speed and timer approach is pretty accurate, but gets worse over time. On the other hand, the sensor measuring the wall approach is the same at any time, but isn't too accurate. So how to you combine these? Maybe at some set interval (e.g., every second), you estimate how far the robot has driven with the timer and joystick command, and you also take a measurement of the wall with your sensor. Now you have two estimates of the robot's position, so which do you use? You could take an average, but shouldn't you consider how much noise each method has? So maybe you take some sort of weighted average. And now you've invented the Kalman filter.
 
-Similarly, you should also represent your joystick commands as a continuous random variable because there are lots of little things that can make the true speed of the robot different from your joystick command (e.g., slightly deflated tires on the robot, resolution of the joystick, etc.). Therefore, the speed of the robot $$u$$ is represented with a Gaussian distribution; i.e.,
+---
+**Key point**: a Kalman filter combines your current knowledge of the state (and its uncertainty) with the most recent command (and its uncertainty) and measurement (and its uncertainty) to calculate a new estimate of the state that minimizes the state's new uncertainty. It does this by calculating a weight (called the Kalman gain) that is proportional to ratios of the uncertainties of the previous state, the command, and the measurement.
 
-$$
-u \sim \mathcal{N}(\mu_u, \sigma_u^2).
-$$
+---
 
-Finally, your sensor measurements should also be represented as a continuous random variable. No sensor is perfect, so we can expect some noise in our measurements of the wall. Therefore, each laser measurement is represented with a Gaussian distribution; i.e.,
+Going even further, if all the uncertain elements (state, command, measurement) can be represented perfectly by Gaussian random variables (more on this below), and the calculation of new states from the command and measurements uses only linear equations (more on this below, too), then the Kalman filter is the best possible estimate you can come up with. That is, it has been proven that no other method in combining the information can give you a more accurate estimate of the state.
+
+## Gaussian random variables
+
+As was eluded to earlier, the state, commands, measurements, map, and initial state of the robot all have uncertainty. To model this uncertainty, we're going to represent each quantity as a *Gaussian random variable*. For the high-level understanding we're going for in this tutorial, it's enough to think of Gaussian random variables as a mean and variance, where the variance is the squared standard deviation. 
+
+For example, suppose we read the manual that came with the sensor and it says it measures the distance to things with a standard deviation of $$0.5\text{ m}$$. For Gaussian random variables, this means that
+
+- About 68% of the time, the true distance to the wall is within $$\pm 0.5\text{ m}$$ (one standard deviation) what the sensor measures
+- About 95% of the time, the true distance to the wall is within $$\pm 1.0\text{ m}$$ (two standard deviations) what the sensor measures
+- About 99.7% of the time, the true distance to the wall is within $$\pm 1.5\text{ m}$$ (three standard deviations) what the sensor measures
+
+So, for example, when the sensor says the wall is $$10\text{ m}$$ away, you are 99.7% sure the true distance to the wall is between $$8.5\text{ m}$$ and $$11.5\text{ m}$$ away. 
+
+A common notation to say that something is being represented by a Gaussian random variable is
 
 $$
 z \sim \mathcal{N}(\mu_z, \sigma_z^2).
 $$
 
-## Assumptions
-Before we continue, I should note that the following Kalman filter makes a couple of (reasonable) assumptions.
+which is another way of saying $$z$$ (the measurement in our case) is a Gaussian random variable with mean $$\mu_z$$ (the true distance to the wall) and variance $$\sigma_z^2$$ (the noise of the sensor). In plain English, that's "when we take a measurement with our sensor, it is going to give use the true distance to the wall plus or minus some noise", where the noise is represented by the variance (the squared standard devation). As mentioned above, the noise (and therefore the variance) can be obtained from the sensor's manual, which is $$\sigma_z^2=(0.5\text{ m})^2=0.25\text{ m}^2$$.
 
-1. All measurements are *independent*. In other words, previous measurements have no effect whatsoever on future measurements. For example, if your sensor measures $$z=8.45$$ m, this does not influence the next value of $$z$$.
+In the same vein, the state, commands, map, and initial state will also be represented by Gaussian random variables. To summarize,
 
-2. Gaussian distributions are a good representation of $$x$$, $$u$$, and $$z$$. For example, if our robot was standing still and our sensor took thousands of measurements, we'd expect those measurements to be normally distributed. This is usually a fair assumption because the [central limit theorem](https://en.wikipedia.org/wiki/Central_limit_theorem).
+- $$x \sim \mathcal{N}(\mu_x, \sigma_x^2)$$, or "we estimate our robot to be within its true position plus or minus some uncertainty"
+- $$u \sim \mathcal{N}(\mu_u, \sigma_u^2)$$, or "the speed we command the robot to go is the true speed of the robot plus or minus some noise"
+- $$z \sim \mathcal{N}(\mu_z, \sigma_z^2)$$, or "the sensor measures the true distance to the wall, plus or minus some noise"
+- $$w \sim \mathcal{N}(\mu_w, \sigma_w^2)$$, or "where we think the wall is in the environment is the true position of the wall plus or minus some uncertainty"
+- $$x_0 \sim \mathcal{N}(\mu_{x_0}, \sigma_{x_0}^2)$$, or "when we put the robot at the start line, we put it exactly at the start line plus or minus some uncertainty"
 
-## Our strategy for estimating $$x$$
-Before getting into the details, I'm going to discuss the general strategy of how we are going to proceed. First, we're going to say our initial estimate of $$x$$ is the location at which (we think) the robot starts. Let's say there is a "starting line" drawn on the ground at $$x=0$$ where we place our robot. So at this point we have (for example)
+The role of the Kalman filter is to estimate the state $$x$$ given the commands $$u$$, measurements $$z$$, the map $$w$$, and the initial state $$x_0$$. For these latter Gaussian random variables, it's not uncommon to have a good guess at their variances ahead of time. For this tutorial, we'll use the variances
+
+- $$\sigma_u^2=0.04\text{ m}^2/\text{s}^2$$ (i.e., the joystick commands have a standard deviation of $$0.2\text{ m/s}$$),
+- $$\sigma_z^2=0.49\text{ m}^2$$ (i.e., the sensor measurements have a standard deviation of $$0.2\text{ m}$$),
+- $$\sigma_w^2=0.01\text{ m}^2$$ (i.e., the position of the wall on the map has a standard deviation of $$0.1\text{ m}$$),
+- $$\sigma_{x_0}^2=0.09\text{ m}^2$$ (i.e., the initial position of the robot has a standard deviation of $$0.3\text{ m}$$),
+
+Note that in some Kalman filter implementations, the variances $$\sigma_u^2$$ and $$\sigma_z^2$$ can change over time. For example, perhaps your joystick gets more uncertain the faster you go, or as it loses battery power. Similarly, perhaps the sensor is less accurate at farther distances.
+
+
+## Discrete time
+
+Although not strictly necessary when using a Kalman filter, we are going to use discrete time, where we update our command and then take a measurement at every timestep. For simplicity, we're going to make this timestep equal to one second. Put differently, we're going to estimate $$x$$ once per second using the velocity $$u$$ we commanded at the start of that second and the measurement $$z$$ we took at the end of that second. 
+
+It is common to use the subscript $$k$$ to denote the timestep you're talking about. That is, if your timestep is $$0.5\text{ s}$$ long, then $$k=1$$ is at $$t=0.5\text{ s}$$, $$k=2$$ is at $$t=1.0\text{ s}$$ and so on. In our case, the timestep is one second long, so $$k$$ actually matches the number of seconds. To summarize, we are going to estimate $$x_k$$ (the position of the robot at the end of timestep $$k$$) using $$u_{k-1}$$ (the command we sent at the start of timestep $$k$$, or equivalently, the end of timestep $$k-1$$) and $$z_k$$ (the sensor measurement we took at timestep $$k$$). 
+
+Note that $$w$$ is the same for all $$k$$ (that is, $$w_k$$ is always equal to $$w_{k-1}$$ because the wall does not move) so we'll omit its subscript. Also note that you can now see why I wrote the initial position as $$x_0$$, which is the position $$x_k$$ when $$k=0$$.
+
+## The Kalman filter 
+
+Now on to the main event! The Kalman fitler is made up of two steps that are executed at each timestep. The first is called the *prediction step*, which incorporates the command $$u_{k-1}$$ (that is, the command at the start of the timestep or the end of the previous timestep). In our example, this step *predicts* the robot position $$x_k$$ by incorporating the speed commanded by the joystick over the length of the timestep.
+
+The second step is called the *correction step*, which incorporates the measurement $$z_k$$ (that is, the sensor measurement at the end of the timestep). In our example, this step *corrects* the predicted robot position by incorporating the sensor's measurement of the position of the wall.
+
+### The prediction step
+
+The prediction step of the Kalman filter is where we estimate the position of the robot using the command. So get out the joystick and your stopwatch, its time to predict where the robot will be ($$x_k$$) after we've given our joystick command ($$u_{k-1}$$) and it has driven for the timestep of one second. This should be pretty straightforward. We predict the robot to be where it was when the timestep started ($$x_{k-1}$$) plus the speed the robot was driving ($$u_{k-1}$$) times how long it drove ($$\Delta t$$). That is,
 
 $$
-\mu_{x,0} = 0 \text{ m}, \quad \sigma_{x,0}^2 = 0.05^2 \text{ m}^2.
+x_k = x_{k-1} + u_{k-1}\Delta t.
 $$
 
-Note that we are not sure if we started the robot at *exactly* $$x=0$$ m, so we say our mean is zero with some initial variance. Now we apply a joystick command to start driving forward. Estimating $$x$$ now depends on combining two pieces of information: our commanded speed and our sensor measurements. We combine these by repeatedly performing the following two steps:
-
-1. *Predict* the new position of the robot by integrating the speed we commanded with the joystick. Think of it this way: if the robot was at $$x=8.1$$ m and we commanded it to go $$0.3$$ m/s for one second, a good prediction of where the robot is now would be $$x=8.4$$ m.
-
-2. *Correct* our prediction with a new measurement by the sensor. Let's say our prediction was $$x = 8.4$$ m, and we know the wall is $$10$$ m from the start. Now we take a measurement with our sensor, and we get (for example) $$z = 1.67$$ m. Well, given that our wall is at $$w = 10$$ m, a measurement of $$z = 1.67$$ m implies that we are at $$x = 10 - 1.67 = 8.33$$ m, which is different from our prediction. So which value do we use? The answer is *both*. We combine the two estimates, using their respective uncertainties to determine how much we "believe" one versus the other.
-
-The following couple sections go into the details of these two steps.
-
-## Prediction
-The prediction step uses a *motion model* to predict the new state based on new inputs. In our case, the prediction estimates what happens to the position of the robot when you apply joystick commands. Given the position at the previous time step $$x_{k-1}$$ and the current velocity input by the joystick $$u_k$$, the predicted position of the robot $$x_k$$ is
+Let's put some numbers into this equation. Suppose we estimated our initial position of the robot to be at zero metres ($$x_0=0\text{ m}$$), and we commanded the robot to drive at two metres per second ($$u_{k-1}=2\text{ m/s}$$) for one second ($$\Delta t=1\text{ s}$$). Then our new estimated position of the robot ($$x_1$$) is
 
 $$
-x_k = x_{k-1} + t u_k,
+x_1 = 0\text{ m} + (2\text{ m/s})(1\text{ s}) = 2\text{ m}.
 $$
 
-where $$t$$ is length of the time step. For example, suppose the robot was at $$2.5$$ m ($$x_{k-1}$$) and we used the joystick to command it to go $$0.5$$ m/s ($$u_k$$) for $$1$$ s ($$t$$). According to the motion model, our predicted position ($$x_k$$) is $$2.5 + (1)(0.5) = 3.0$$ m. Note, however, that $$x_k$$, $$x_{k-1}$$, and $$u_k$$ are random variables. To deal with this, we take advantage of a couple important properties of Gaussian random variables:
-
-1. Given two Gaussian random variables $$a\sim\mathcal{N}(\mu_a,\sigma^2_a)$$ and $$b\sim\mathcal{N}(\mu_b,\sigma^2_b)$$, their sum $$c = a + b$$ is also a Gaussian random variable, where $$c\sim\mathcal{N}(\mu_a + \mu_b,\sigma^2_a + \sigma^2_b)$$.
-
-2. Given a Gaussian random variable $$a\sim\mathcal{N}(\mu_a,\sigma^2_a)$$, multiplying it by a scalar $$b = na$$ results in the Gaussian random variable $$b\sim\mathcal{N}(n\mu_a, n^2\sigma^2_a)$$.
-
-In other words, if you apply a *linear* operation to a Gaussian random variable, the result is also a Gaussian random variable. By applying these properties, let's look at how we properly update our position estimate when we perform a prediction using the motion model:
+Now let's say we commanded the same velocity for the next timestep. Then,
 
 $$
-\begin{align}
-\mu_{x,k} &= \mu_{x,k-1} + t \mu_{u,k} \\
-\sigma^2_{x,k} &= \sigma^2_{x,k-1} + t^2\sigma^2_{u,k}.
-\end{align}
+x_2 = 2\text{ m} + (2\text{ m/s})(1\text{ s}) = 4\text{ m}.
 $$
 
-So it turns out updating our estimate of $$x$$ in the prediction step is pretty straightforward precisely because our motion model is linear. When this is not the case, we *cannot* use a regular Kalman filter (this is commonly dealt with by using the extended Kalman filter (EKF) or unscented Kalman filter (UKF), but that is beyond the scope of this post).
+Super easy, right? It sounds like we're done, but we've forgotten something important. Remember, all of these variables ($$x_k$$, $$x_0$$, $$u_{k-1}$$) are Gaussian random variables with variances. As we discussed above, we already have values for the variances of everything except for $$x_k$$. So we need to figure out, for example, what is the variance of $$x_1$$? Of $$x_2$$? 
 
-An important result of the prediction step is that the variance of our estimate of $$x$$ has *increased*. It is the old variance plus some additional uncertainty caused by our noisy motion command. Intuitively this makes sense; we applied a noisy motion command, so naturally we are less certain about where the robot is. Let's look at an example of PDFs of our estimate of $$x$$ before and after an application of the prediction step (see [this previous post](http://marcgallant.ca/2015/12/16/you-dont-know-where-your-robot-is/) for a review of PDFs):
+Look again at the equation above we used to calculate $$x_k$$. The first thing we need to understand is, what happens when we multiply a Gaussian random variable (in this case $$u_{k-1}$$) by a regular number (in this case $$\Delta t$$). Put differently, if we have 
 
-![PDFs illustrating the prediction step of the Kalman filter](/images/kf_predict.png)
+$$
+u \sim \mathcal{N}(\mu_u, \sigma_u^2),
+$$
 
-The above example illustrates the two things the prediction does: it moves our estimate forward in time and increases the variance. You can imagine what would happen if we didn't have a sensor to perform a correction step: the best we could do is just repeatedly perform predictions using our joystick commands. As a result, we would keep moving the estimate forward in time, but it would get more and more uncertain the longer we did this. This is called *dead reckoning*, and is usually only a suitable form of localization over short distances.
+how does multiplying $$u$$ by $$\Delta t$$ affect the mean and variance? Fortunately, for Gaussian random variables, this is very straightforward. 
 
-## Correction
+---
+**Multiplying a Gaussian random variable by a scalar (regular number)**: Given a Gaussian random variable $$a\sim\mathcal{N}(\mu_a,\sigma^2_a)$$, multiplying it by a scalar $$s$$ results in the Gaussian random variable $$as\sim\mathcal{N}(\mu_as, \sigma^2_as^2)$$.
+
+---
+
+So it turns out $$u_{k-1}\Delta t$$ is itself a Gaussian random variable with variance $$\sigma_u^2\Delta t^2$$. Great! We're almost there. Returning to our original problem, remember we are trying to figure out the variance of $$x_k$$, where
+
+$$
+x_k = x_{k-1} + u_{k-1}\Delta t.
+$$
+
+We just figured out that the second term in the sum is a Gaussian random variable and we know its variance. Now we need to figure out what happens when we add two Gaussian random variables together (in our case $$x_{k-1} + u_{k-1}\Delta t$$). Again, this is fortunately very straightforward for Gaussian random variables.
+
+---
+**Adding two Gaussian random variables together**: Given two Gaussian random variables $$a\sim\mathcal{N}(\mu_a,\sigma^2_a)$$ and $$b\sim\mathcal{N}(\mu_b,\sigma^2_b)$$, their sum $$a + b$$ is also a Gaussian random variable, where $$(a+b)\sim\mathcal{N}(\mu_a + \mu_b,\sigma^2_a + \sigma^2_b)$$.
+
+---
+
+Ah, quite straightforward. It turns out $$x_k$$ is a Gaussian random variable, and its variance is just the sum of the variances of $$x_{k-1}$$ and $$u_{k-1}\Delta t$$. When $$k=1$$ (i.e., the first timestep), this means that
+
+$$
+\sigma_{x_1}^2 = \sigma_{x_0}^2 + \sigma_{u_0}^2\Delta t^2
+$$
+
+Recall that $$\sigma_{x_0}^2$$ is just the variance of the initial position, which we know beforehand is $$0.09\text{ m}^2$$. Similarly, $$\sigma_{u_0}^2$$ is just the variance of our joystick command, which we also know beforehand is $$0.04\text{ m}^2/\text{s}^2$$. And finally, we said the length of our timestep is $$\Delta t=1\text{ s}$$. Putting this all together and we get
+
+$$
+\sigma_{x_1}^2 = 0.09\text{ m}^2 + \left(0.04\text{ m}^2/\text{s}^2\right)\left(1\text{ s}\right)^2 = 0.13\text{ m}^2
+$$
+
+And how do we calculate the variance of the robot's position at the next timestep (i.e., at $$k=2$$)? Well, we just bump up $$k$$ in the variance equation above, that is
+
+$$
+\sigma_{x_2}^2 = \sigma_{x_1}^2 + \sigma_{u_1}^2\Delta t^2
+$$
+
+and since we just calculated $$\sigma_{x_1}^2=0.13\text{ m}^2$$, we have all the terms on the right hand side. So,
+
+$$
+\sigma_{x_2}^2 = 0.13\text{ m}^2 + \left(0.04\text{ m}^2/\text{s}^2\right)\left(1\text{ s}\right)^2 = 0.17\text{ m}^2.
+$$
+
+Perhaps you're starting to see a pattern here? If we just continue to estimate the robot's position purely by using the velocity commanded by the joystick, the variance in our estimate in our robot's position will increase at every timestep. That is, we become less and less certain where our robot is over time. Imagine doing this for a long, long time. At some point, you will have very little confidence in the robot's position. When all seems hopeless and you're completely lost, you suddenly see the wall. We're saved! You measure it with your sensor and *correct* your position since the uncertainty of your sensor measurement is much smaller than all the uncertainty you've accumulated.
+
+---
+**Key point**: The prediction step of a Kalman filter predicts what the state will be at the end of the current timestep. It also estimates the variance of the state, which will always *increase* relative to the previous timestep.
+
+---
+
+Writing this reminded me of a time when I was kid and slept over at my new friend's house. We slept in the basement, and I remember needing to get up to go to the washroom in the middle of the night. It was pitch dark and I was unfamiliar with the layout of the room. I remember carefully feeling my way around until I was hopelessly lost. I had literally had no idea where I was when suddenly *ouch* I kicked the bottom stair and knew exactly where I was. Every step of my pitiful navigation in the dark was increasing the uncertainty of my position until I measured the known position of something in the environment, at which point my uncertainty drastically decreased. At its core, this is what a Kalman filter does, putting numbers to all these things and calculating the best estimate of the state and its variance given the information available. We'll see how we calculate the state and its variance after the measurement of the environment in the next section.
+
+### The correction step
+
+The correction step of the Kalman filter is where we estimate the position of the robot using the sensor and merge it with the estimate we got from the command in the prediction step. Recall from the prediction step that after one timestep ($$k=1$$), we had
+
+$$
+x_1 = 2\text{ m}, \quad \sigma_{x_1}^2=0.13\text{ m}^2.
+$$
+
+Now suppose the position of the wall is at $$w=10\text{ m}$$, with $$\sigma_w^2=0.01\text{ m}^2$$ as we stated above. So we activate our trusty (but noisy) sensor and measure the position of the wall from our current estimated position $$x_1$$ and we get $$z_1=8.5\text{  m}$$. Well we know the wall is about $$10\text{ m}$$ away from the start, and now we've measured it to be $$8.5\text{ m}$$ away, so our sensor is telling us the robot's position is $$10-8.5=1.5\text{ m}$$. More generally, the sensor says that
+
+$$
+x_k = w - z_k.
+$$
+
+And what about the variance of the sensor's estimate of $$x_k$$? Well, recall from above that when you add two Gaussian random variables together, the resulting variance is the sum of variances (and also note that subtraction is just addition by a negative number). And once again, we know the variances of the two Gaussian random variables on the right hand side of this equation. The first is the uncertainty in the position of the wall ($$0.01\text{ m}^2$$), and the second is the noise in the sensor measurement ($$0.49\text{ m}^2$$). So according to the sensor,
+
+$$
+x_1 = 1.5\text{ m}, \quad \sigma_{x_1}^2=0.01\text{ m}^2 + 0.49\text{ m}^2 = 0.50\text{ m}^2
+$$
+
+To summarize, we have two competing estimates of the current position of the robot. One from the command, and one from the sensor. As you may have guessed, the correction step of the Kalman filter calculates a weighted averge of these two estimates, using their variances as their weights. This means that the result of the correction step will give an estimate somewhere between the command's prediction and the sensor's measurement. One way to formulate this is
+
+$$
+x_1 = x_{1,\text{command}} + K\left(x_{1,\text{sensor}} - x_{1,\text{command}}\right),
+$$
+
+where $$K$$ is some number between $$0$$ and $$1$$. Let's think about some hypothetical values of $$K$$ to convince ourselves that this makes sense. First, imagine $$K=0$$, which would simplify the equation to
+
+$$
+x_1 = x_{1,\text{command}}.
+$$
+
+In other words, $$K=0$$ means we believe the command completely and ignore the sensor. Conversely, imagine $$K=1$$, which would give us
+
+$$
+x_1 = x_{1,\text{sensor}}.
+$$
+
+In other words, $$K=1$$ means we believe the sensor completely and ignore the command. Finally, substituting $$K=0.5$$ gives us
+
+$$
+x_1 = x_{1,\text{command}} + 0.5\left(x_{1,\text{sensor}} - x_{1,\text{command}}\right),
+$$
+
+which essentially moves the command estimate halfway towards the sensor measurement. That is, it's the exact average of the two estimates. Hopefully these three examples convince you that all that's left to do is calculate the appropriate value for $$K$$.
+
+So what is a good value for $$K$$ in our example? Well, recall we want $$K$$ to be close to zero to indicate "screw the sensor, let's just believe the commands". Well a good time to do that would be when the command noise is close to zero; that is, your joystick commands are close to the true speed of the robot. On the other hand, we want $$K$$ to be close to one when the opposite is true; that is, our commands are nowhere near the true speed of the robot. An equation for $$K$$ that handles both of these cases is
+
+$$
+K = \frac{\sigma_{x_1,\text{command}}^2}{\sigma_{x_1,\text{command}}^2 + \sigma_{x_1,\text{sensor}}^2}.
+$$
+
+Try imagining the case where the command uncertainty is way smaller than the sensor uncertainty (i.e., $$\sigma_{x_1,\text{command}}^2 \ll \sigma_{x_1,\text{sensor}}^2$$) and you'll see that $$K$$ approaches zero, as desired. Similarly, imagining the case where command uncertainty is way larger than the sensor uncertainty (i.e., $$\sigma_{x_1,\text{command}}^2 \gg \sigma_{x_1,\text{sensor}}^2$$) produces a $$K$$ that approaches one.
+
+Substituting our values for the variances lets us calculate $$K$$ for this timestep. We get
+
+$$
+K_1 = \frac{0.13\text{ m}^2}{0.13\text{ m}^2 + 0.50\text{ m}^2} \approx 0.206,
+$$
+
+giving us the corrected estimate of the robot's position at $$k=1$$ of
+
+$$
+x_1 =  2.0\text{ m} + 0.206\left(1.5\text{ m} - 2.0\text{ m}\right) \approx 1.90\text{ m}.
+$$
+
+I think you'll agree this makes a lot of sense. The estimate moved a small amount towards the sensor estimate from the command estimate (about 21% of the way there) because the command's uncertainty was smaller. It's important to note that this new estimate is *better* than each individual estimate, which we'll show below when we calculate the variance of the new estimate.
+
+I'd also like to highlight the role of the sensor in this scenario. As we discussed above, if you were to rely completely on the commands, the growth in uncertainty is completely **unbounded**. It will just grow, grow, grow over time. On the other hand, the sensor noise is a constant that does not increase over time. As a result, it **bounds** the uncertainty of the estimate. Even though the correction step "believed" the command estimate more, the correction from the sensor removes that unbounded growth of uncertainty and will actually make the uncertainty eventually reach a steady state value (assumining we are always able to take a measurement of the wall with the sensor).
+
+### The real correction step
+
+Got ya! Ok, those of you who have some previous knowledge of Kalman filters can hold off on the angry emails. I was a little dishonest in the previous section about how the correction step of a Kalman filter works. What we did was possible because our example is a special case where we can perfectly estimate the robot's position given a single sensor measurement. This is not always the case for different sensors. I decided to introduce the correction step as I did above because it really highlights that all you're doing is combining your estimate from the prediction step with the measurement by calculating a weight. You'll see that the actual Kalman filter correction step is quite similar, but changes the point of view in which the prediction is compared to the sensor measurement.
+
+In my initial description of the correction step above, we compared the prediction estimate and the sensor estimate by transforming the sensor measurement ($$z_k$$) into a state measurement ($$x_k$$). If you remember, we did this via the equation
+
+$$
+x_k = w - z_k.
+$$
+
+In other words, we calculated the answer to the question "if the sensor really did measure the position of the wall, where would the robot be?". The Kalman filter actually does this the other way around. That is, it transforms the prediction estimate into an *expected measurement*. Put differently, it calculates the answer to the question "if the robot really did move as the prediction suggested, what would you expect the measurement to be?". For our example, the answer to this question is a straightforward manipulation of the above equation. That is,
+
+$$
+z_k = w - x_k,
+$$
+
+where we can now calculate the expected measurement from the prediction estimate. If you recall the values above, this means our expected measurement is
+
+$$
+z_k = 10\text{ m} - 2\text{ m} = 8\text{ m}.
+$$
+
+So instead of having two position estimates to compare, we instead have two measurement estimates to compare: the real one from the sensor (which has uncertainty), and the expected measurement from our prediction estimate (which also has uncertainty). A key thing to realize here is that the difference between the two position estimates (in my first explanation of the correction step) and the difference between the two measurement estimates (the actual sensor measurement and the expected measurement) is **exactly** the same. The illustration below helps show why that is true.
+
+![Driving a robot towards a wall](/images/correction_example.png)
+
+In the illustration, the value $$s$$ is the same whether you're comparing the position estimates or the measurements. And you may recognize that value of $$s$$ as 
+
+
+
+<br/><br/> <br/><br/> <br/><br/>
 
 Let's start this section with a simple example. Suppose that after the prediction step, your estimate of the robot's position is
 
@@ -139,8 +319,6 @@ $$
 $$
 
 In other words, *the difference between the actual and expected measurement is directly related to the difference between the prediction-only and sensor-only position estimates*. In this example, this difference *is* the difference between the estimates, but that's not always the case. For example, let's say instead the sensor measured the angle between the robot and the top of the wall (i.e., as you get closer to the wall, this angle gets larger). In this scenario, we can compare the expected and actual measurements of the angle, and their difference will be directly related (but not equal to) the difference between the prediction-only and sensor-only estimates. Coming back to our example, here is an illustration describing what's going on:
-
-![Driving a robot towards a wall](/images/correction_example.png)
 
 So in our example, we can clearly see how $$s$$ is both the difference between the actual and expected measurements and difference between the prediction-only and sensor-only position estimates (once again, these are normally directly related but not necessarily the same).
 
