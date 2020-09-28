@@ -7,9 +7,9 @@ date:   2016-01-28
 
 I've come across various instances of people asking for an intuitive introduction to the Kalman filter, often in the context of robotics. These people are often hobbyists, undergraduate students, or keen high school students trying to get their robot to properly combine data from various sensors. I've even written some answers on the [Robotics Stack Exchange](http://robotics.stackexchange.com) helping people with various localization and mapping problems. These people are often referred to great references (e.g., [Probabilistic Robots](http://www.probabilistic-robotics.org)), but many give up in the first few chapters because of a lack of grasping what is really going on, or trouble with why something works. To this end, this post shows how a very basic Kalman filter works using a bottom-up approach. I use a simple one-dimensional robot to really try to get across *why* this fancy algorithm has been so popular over the years.
 
-I should point out that this is not a mathematically rigourous treatment of the Kalman filter. I'll leave that to the textbooks. What I hope to accomplish here is a basic understanding of the fundamentals, and to leave the reader with an appreciation of the usefulness of this beautiful algorithm.
+I should point out that this is not a mathematically rigorous treatment of the Kalman filter. I'll leave that to the textbooks. What I hope to accomplish here is a basic understanding of the fundamentals, and to leave the reader with an appreciation of the usefulness of this beautiful algorithm.
 
-## Prerequisities
+## Prerequisites
 
 You understand that in the real world, anything you measure or are estimating is often represented by a random variable. That is, in the field of mobile robotics, [you don't know where your robot is]({% post_url 2015-12-16-you-dont-know-where-your-robot-is %}). It is helpful if you know what a mean and standard deviation are. You should be able to do simple arithmetic (addition, subtraction, multiplication, division) and understand simple equations and how to manipulate them using basic algebra (e.g., "move" $$x$$ to the other side of the equal sign by subtracting it from both sides).
 
@@ -89,7 +89,7 @@ Note that $$w$$ is the same for all $$k$$ (that is, $$w_k$$ is always equal to $
 
 ## The Kalman filter 
 
-Now on to the main event! The Kalman fitler is made up of two steps that are executed at each timestep. The first is called the *prediction step*, which incorporates the command $$u_{k-1}$$ (that is, the command at the start of the timestep or the end of the previous timestep). In our example, this step *predicts* the robot position $$x_k$$ by incorporating the speed commanded by the joystick over the length of the timestep.
+Now on to the main event! The Kalman filter is made up of two steps that are executed at each timestep. The first is called the *prediction step*, which incorporates the command $$u_{k-1}$$ (that is, the command at the start of the timestep or the end of the previous timestep). In our example, this step *predicts* the robot position $$x_k$$ by incorporating the speed commanded by the joystick over the length of the timestep.
 
 The second step is called the *correction step*, which incorporates the measurement $$z_k$$ (that is, the sensor measurement at the end of the timestep). In our example, this step *corrects* the predicted robot position by incorporating the sensor's measurement of the position of the wall.
 
@@ -194,7 +194,7 @@ $$
 x_1 = 1.5\text{ m}, \quad \sigma_{x_1}^2=0.01\text{ m}^2 + 0.49\text{ m}^2 = 0.50\text{ m}^2
 $$
 
-To summarize, we have two competing estimates of the current position of the robot. One from the command, and one from the sensor. As you may have guessed, the correction step of the Kalman filter calculates a weighted averge of these two estimates, using their variances as their weights. This means that the result of the correction step will give an estimate somewhere between the command's prediction and the sensor's measurement. One way to formulate this is
+To summarize, we have two competing estimates of the current position of the robot. One from the command, and one from the sensor. As you may have guessed, the correction step of the Kalman filter calculates a weighted average of these two estimates, using their variances as their weights. This means that the result of the correction step will give an estimate somewhere between the command's prediction and the sensor's measurement. One way to formulate this is
 
 $$
 x_1 = x_{1,\text{command}} + K\left(x_{1,\text{sensor}} - x_{1,\text{command}}\right),
@@ -242,11 +242,11 @@ $$
 
 I think you'll agree this makes a lot of sense. The estimate moved a small amount towards the sensor estimate from the command estimate (about 21% of the way there) because the command's uncertainty was smaller. It's important to note that this new estimate is *better* than each individual estimate, which we'll show below when we calculate the variance of the new estimate.
 
-I'd also like to highlight the role of the sensor in this scenario. As we discussed above, if you were to rely completely on the commands, the growth in uncertainty is completely **unbounded**. It will just grow, grow, grow over time. On the other hand, the sensor noise is a constant that does not increase over time. As a result, it **bounds** the uncertainty of the estimate. Even though the correction step "believed" the command estimate more, the correction from the sensor removes that unbounded growth of uncertainty and will actually make the uncertainty eventually reach a steady state value (assumining we are always able to take a measurement of the wall with the sensor).
+I'd also like to highlight the role of the sensor in this scenario. As we discussed above, if you were to rely completely on the commands, the growth in uncertainty is completely **unbounded**. It will just grow, grow, grow over time. On the other hand, the sensor noise is a constant that does not increase over time. As a result, it **bounds** the uncertainty of the estimate. Even though the correction step "believed" the command estimate more, the correction from the sensor removes that unbounded growth of uncertainty and will actually make the uncertainty eventually reach a steady state value (assuming we are always able to take a measurement of the wall with the sensor).
 
 ### The real correction step
 
-Got ya! Ok, those of you who have some previous knowledge of Kalman filters can hold off on the angry emails. I was a little dishonest in the previous section about how the correction step of a Kalman filter works. What we did was possible because our example is a special case where we can perfectly estimate the robot's position given a single sensor measurement. This is not always the case for different sensors. I decided to introduce the correction step as I did above because it really highlights that all you're doing is combining your estimate from the prediction step with the measurement by calculating a weight. You'll see that the actual Kalman filter correction step is quite similar, but changes the point of view in which the prediction is compared to the sensor measurement.
+Got ya! OK, those of you who have some previous knowledge of Kalman filters can hold off on the angry emails. I was a little dishonest in the previous section about how the correction step of a Kalman filter works. What we did was possible because our example is a special case where we can perfectly estimate the robot's position given a single sensor measurement. This is not always the case for different sensors. I decided to introduce the correction step as I did above because it really highlights that all you're doing is combining your estimate from the prediction step with the measurement by calculating a weight. You'll see that the actual Kalman filter correction step is quite similar, but changes the point of view in which the prediction is compared to the sensor measurement.
 
 In my initial description of the correction step above, we compared the prediction estimate and the sensor estimate by transforming the sensor measurement ($$z_k$$) into a state measurement ($$x_k$$). If you remember, we did this via the equation
 
