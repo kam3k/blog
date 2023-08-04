@@ -1,11 +1,93 @@
----
-layout: default
----
+<!DOCTYPE html>
+<html lang="en">
+  <!----------------------------------------------------------------------------------------------->
+  <!-- HEAD --------------------------------------------------------------------------------------->
+  <!----------------------------------------------------------------------------------------------->
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    
+    <title>Marc Gallant</title>
+    <meta name="description" content="Like, you know, whatever">
+    
+    <!-- Recommended minimum -->
+    <meta property="og:title" content="Marc Gallant">
+    <meta property="og:description" content="Like, you know, whatever">
+    
+    <!-- You could also inline the stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
+  </head>
 
-<div class="home">
-    <ul class="posts">
-        {% for post in site.posts %}
-        <li><span>{{ post.date | date: site.date_format }}</span><a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></li>
-        {% endfor %}
-    </ul>
-</div>
+  <!----------------------------------------------------------------------------------------------->
+  <!-- BODY --------------------------------------------------------------------------------------->
+  <!----------------------------------------------------------------------------------------------->
+  <body>
+    
+    <!----------------------->
+    <!-- HEADER ------------->
+    <!----------------------->
+    <header>
+      <h1>
+        <p><a href="#home">Marc Gallant</a></p>
+      </h1>
+      <nav>
+        <a href="#blog">Blog</a>
+        <a href="https://github.com/kam3k">GitHub</a>
+        <a href="https://www.linkedin.com/in/marcjgallant">LinkedIn</a>
+      </nav>
+    </header>
+    
+    <!----------------------->
+    <!-- MAIN --------------->
+    <!----------------------->
+    <main>
+      
+      <!----------------------->
+      <!-- HOME --------------->
+      <!----------------------->
+      <section id="home"> <!-- HOME -->
+        <p>Hi, I'm Marc. I like <a href="https://en.wikipedia.org/wiki/Mobile_robot">robotics</a>, <a href="https://github.com/kam3k">software</a>, <a href="https://en.wikipedia.org/wiki/Space_habitat#/media/File:Spacecolony3edit.jpeg">science fiction</a>, <a href="https://en.wikipedia.org/wiki/Badminton">badminton</a>, <a href="https://www.youtube.com/watch?v=aIqxpADs1Zo">guitar</a>, and <a href="https://www.linkedin.com/in/marcjgallant/details/honors/">teaching</a>. I do not like <a href="https://www.huffpost.com/entry/mushroom-tweets-hate_l_5d2cfa68e4b04927c1c88a90">mushrooms.</a></p>
+      </section>
+      
+      <!----------------------->
+      <!-- BLOG --------------->
+      <!----------------------->
+      <section id="blog">
+        <p>2023-02-17 </time><a href="#defaults">Defaults</a></p>
+        <p>2023-02-15 <a href="#algorithm-illustrations">Algorithm Illustrations</a></p>
+      </section>
+              
+      <!-- DEFAULTS --------------->
+      <section id="defaults">
+        <article>
+          <h2>Defaults<time datetime="2023-02-17">2023-02-17</time></h2>
+          <p>When I first started developing in Linux, I went all in on the tools and configuration rabbit hole. I heavily configured my <tt>.vimrc</tt> with all the latest plugins. My <tt>tmux.conf</tt> had a clock and weather. My <tt>.zshrc</tt> was full of aliases and plugins. And the crown jewel of my setup was my heavily configured i3 window manager (sans desktop environment, of course). And so on. Everything was under version control and could be configured and installed via scripts. Based on countless reddit subreddits and blog posts, I certainly was not alone. I was zipping around the command line, window splits, sessions, etc.</p>
+          <p>My setup became more of a hobby then any sort of notion of productivity. That isn't to say I didn't enjoy it. Whether it was learning of new tools on <a href="https://old.reddit.com/r/unixporn/">unixporn</a> or tweaking the colours in my <tt>.Xresources</tt>, heck I was having fun with it. So what if switching between monitors required a custom script or connecting to wifi required puttering around on the command line. Everything was so lightweight!</p>
+          <p>Eventually I was issued a laptop at work where I was a little more restricted as to what I could do with it. At the same time, I had moved onto other hobbies and wanted to try something a little different. I decided to have a go at really learning the default Gnome desktop. And by defaults I mean just that, I didn't tweak any keyboard shortcuts or any other settings. Rather I learned not only how things were provided out of the box, but also how the desktop was <i>designed</i> to be used (i.e., the Gnome philosophy). It was actually kind of enlightening. At first it was kind of like moving around with one hand behind my back. But to be honest that's what learning vim was like until I stuck with it. And there's something to be said with being able to hop onto anyone else's machine and feel right at home. And although I've toned down the configuration and plugins, I'm still right at home on the command line.</p>
+          <p>Now, several months later, here I am looking ahead at the new features and improvements in the next Gnome release.</p>
+        </article>
+      </section>
+
+      <!-- ALGORITHM ILLUSTRATIONS --------------->
+      <section id="algorithm-illustrations">
+        <article>
+          <h2>Algorithm Illustrations<time datetime="2023-02-15">2023-02-15</time></h2>
+          <p> I often like to draw illustrations to help communicate an algorithm I am explaining, designing, or implementing. For example, perhaps I am teaching someone how a Kalman Filter works using the popular example of a one-dimensional robot driving towards a wall. For this task I want to use simple program(s) that can do the following:
+            <ul>
+              <li>Draw lines, arrows, shapes, and other simple geometries</li>
+              <li>Easily align the different geometries with snapping, guides, and distributing tools</li>
+              <li>Is not overburdened with many features and tools I'll never use</li>
+              <li>Label different parts of the illustration with mathematical symbols or equations, preferably using LaTeX</li>
+              <li>Edit the math/LaTeX after I've put it in the image to update symbols or fix mistakes</li>
+            </ul>
+            Here's the Kalman Filter illustration that shows the kind of detail I usually include.
+            <img loading="lazy" alt="" src="img/1d_robot.png" width="1200" height="600">
+          </p>
+          <p> Back when I was using a Mac for everything, my preferred solution was a combination of <a href="https://www.omnigroup.com/omnigraffle">Omnigraffle</a> and <a href="https://www.chachatelier.fr/latexit/">LaTeXiT</a>, which worked wonderfully. But I've sinced moved on to Linux and prefer to use open source software when possible. A good illustrating solution eluded me until recently, when I found it in <a href="https://www.libreoffice.org/discover/draw/">LibreOffice Draw</a> with the <a href="http://roland65.free.fr/texmaths/index.html">TexMaths plugin</a> (with which I made the above illustration). Success!
+          </p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
