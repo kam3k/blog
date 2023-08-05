@@ -156,7 +156,7 @@ blockquote:before {
   opacity: .2;
 }
 
-table td:nth-child(1) { width: 6.5em; border: 1px solid white;  }
+table td:nth-child(1) { width: 7.5em; border: 1px solid white;  }
 table td:nth-child(2) { width: 20em; border: 1px solid white;  }
 
 img, svg, video, audio {
