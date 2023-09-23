@@ -206,9 +206,6 @@ label:hover {
   color: var(--highlight);
 }
 
-label:before {content:"[";}
-label:after {content:"]";}
-
 label + input,
 label + input + small {
   display: none;
