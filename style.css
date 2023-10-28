@@ -158,9 +158,11 @@ blockquote:before {
 
 table td:nth-child(1) { width: 7.5em; border: 0px;  }
 table td:nth-child(2) { width: 20em; border: 0px;  }
-table.yahtzee td:nth-child(1) { width: 45em; border: 0px;  }
-table.yahtzee td:nth-child(2) { width: 15em; border: 0px;  }
-table.yahtzee td:nth-child(3) { width: 15em; border: 0px;  }
+table.yahtzee { table-layout: fixed; width: 100%; border: 0px; }
+table.yahtzee th { text-align: left; }
+table.yahtzee th:nth-child(1) { width: 60%; }
+table.yahtzee th:nth-child(2) { width: 20%; }
+table.yahtzee th:nth-child(3) { width: 20%; }
 
 img, svg, video, audio {
   display: inline-block;

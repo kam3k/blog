@@ -95,11 +95,14 @@
           <blockquote>Record the number of rolls it took to get a Yahtzee. Always "go" for the number shown on the greatest number dice (i.e., switch numbers if necessary), re-rolling all the dice if they all have different values. Break ties arbitrarily.</blockquote>
           <p>Somehow we have enough friends and family that go along with our nonsense, so we managed 308 trials. But guess who has no choice but to do as many trials as we want? My trusty old Lenovo ThinkPad. I threw together some Python code to run some trials as well. And by "some" I mean one million. So were the human trials necessary? I mean, why are MLB umpires still used to call balls and strikes? It's a human thing. Anyway, here are the results.</p>
         <table class="yahtzee">
+          <thead>
           <tr>
-            <td></td>
-            <td><b>Human</b></td>
-            <td><b>Computer</b></td>
+            <th></th>
+            <th><b>Human</b></th>
+            <th><b>Computer</b></th>
           </tr>
+          </thead>
+          <tbody>
           <tr>
             <td>Number of trials</td>
             <td>308</td>
@@ -125,6 +128,7 @@
             <td>50</td>
             <td>82</td>
           </tr>
+          </tbody>
         </table>
           <br>
           <p>So there you have it. If you go for it every time, your odds of rolling a Yahtzee on any given turn are about 1-in-22 (I'm trusting the computer's 4.55% on this one). Given that you only get 13 turns, the boring approach of filling the score card out the old-fashioned way is probably best if you're trying to defeat an opponent. On the other hand, screw that. Gimme some of those sweet, sweet, bonus Yahtzees!</p>
