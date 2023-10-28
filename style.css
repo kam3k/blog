@@ -158,6 +158,8 @@ blockquote:before {
 
 table td:nth-child(1) { width: 7.5em; border: 0px;  }
 table td:nth-child(2) { width: 20em; border: 0px;  }
+table.table2 td:nth-child(1) { width: 40em; border: 0px;  }
+table.table2 td:nth-child(2) { width: 15em; border: 0px;  }
 
 img, svg, video, audio {
   display: inline-block;

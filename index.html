@@ -57,6 +57,10 @@
       <section id="blog">
         <table>
           <tr>
+            <td>2023-10-28</td>
+            <td><a href="#going-for-yahtzee">Going for Yahtzee</a></td>
+          </tr>
+          <tr>
             <td>2023-09-23</td>
             <td><a href="#circle-of-protection">Circle of Protection</a></td>
           </tr>
@@ -73,6 +77,63 @@
             <td><a href="#algorithm-illustrations">Algorithm Illustrations</a></td>
           </tr>
         </table>
+      </section>
+
+      <!-- GOING FOR YAHTZEE --------------->
+      <section id="going-for-yahtzee">
+        <article>
+          <h2>Going for Yahtzee<time datetime="2023-10-28">2023-10-28</time></h2>
+          <p>My wife and I were playing Yahtzee when the inevitable decision arose. She only had Large Straight and Yahtzee left open and her first roll turned up</p>
+          <br>
+          <div style="text-align: center;">
+            <img loading="lazy" alt="" src="img/dice.png" width="400" height="100">
+          </div>
+          <br>
+          <p>The tempation of Yahtzee (and a chance for the bonus Yahtzees) was too much for her. A misstep? Should she have kept 3-4-5 and gone for the Large Straight instead? Anyway, she went for Yahtzee but it was not to be. As she sketched that familiar zero on the scorecard, she pondered: "what if I just always went for Yahtzee?". Well, those who know us aren't surprised that it didn't end there. Let the great experiment begin!</p>
+          <p>Yahtzees are overpowered. Like the game-ending 150 points gained by catching the golden snitch, the glory and game-ending power of Yahtzees—especially bonus Yahtzees—is tantalizing. For those unfamiliar with the "real" rules of Yahtzee, a bonus Yahtzee not only nets you 100 points (single-handedly equalling a typical bonus-gained upper section in a single turn), but you also get to score in another box. Bonus Yahtzee of fours? Also put 20 in the fours row. Fours row is full? Feel free to mark 40 in Large Straight. Basically at this point you're Victor Krum.</p>
+         <p>So it's clear Yahtzees are where the big points are available. So why not go for Yahtzee every time? And how often can you expect to get them? To answer the former, it depends if you're playing to win or playing for the high score. Sure, you're going to crush it sometimes, but Yahtzees are elusive outcomes. Will your opponent just cruise to victory with a boring 272? There's only one way to find out!<label for="fn1">1</label><input type="checkbox" id="fn1"><small>Well, no. You can use probability theory to solve this problem as well. But, that's not a family friendly activity.</small> We approached this from two angles. First we recruited friends and family to gather the outcomes from as many trials of the following experiment as possible:</p>
+          <blockquote>Record the number of rolls it took to get a Yahtzee. Always "go" for the number shown on the greatest number dice (i.e., switch numbers if necessary), re-rolling all the dice if they all have different values. Break ties arbitrarily.</blockquote>
+          <p>Somehow we have enough friends and family that go along with our nonsense, so we managed 308 trials. But guess who has no choice but to do as many trials as we want? My trusty old Lenovo ThinkPad. I threw together some Python code to run some trials as well. And by "some" I mean one million. So were the human trials necessary? I mean, why are MLB umpires still used to call balls and strikes? It's a human thing. Anyway, here are the results.</p>
+        <table class="table2">
+          <tr>
+            <td></td>
+            <td><b>Human</b></td>
+            <td><b>Computer</b></td>
+          </tr>
+          <tr>
+            <td>Number of trials</td>
+            <td>308</td>
+            <td>1000000</td>
+          </tr>
+          <tr>
+            <td>Average number of rolls to get a Yahtzee</td>
+            <td>11.05</td>
+            <td>11.10</td>
+          </tr>
+          <tr>
+            <td>Number of Yahtzees on the first roll</td>
+            <td>0%</td>
+            <td>0.075%</td>
+          </tr>
+          <tr>
+            <td>Number of Yahtzees in the first three rolls</td>
+            <td>3.25%</td>
+            <td>4.55%</td>
+          </tr>
+          <tr>
+            <td>Most rolls needed to get a Yahtzee</td>
+            <td>50</td>
+            <td>82</td>
+          </tr>
+        </table>
+          <br>
+          <p>So there you have it. If you go for it every time, your odds of rolling a Yahtzee on any given turn are about 1-in-22 (I'm trusting the computer's 4.55% on this one). Given that you only get 13 turns, the boring approach of filling the score card out the old-fashioned way is probably best if you're trying to defeat an opponent. On the other hand, screw that. Gimme some of those sweet, sweet, bonus Yahtzees!</p>
+          <br>
+          <div style="text-align: center;">
+            <img loading="lazy" alt="" src="img/snitch.jpg" width="200" height="200">
+          </div>
+          <br>
+        </article>
       </section>
 
       <!-- CIRCLE OF PROTECTION --------------->
