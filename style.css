@@ -97,10 +97,6 @@ p, ul, ol, article {
   margin-bottom: .6em;
 }
 
-ul {
-  list-style-type: disc;
-}
-
 ul li::marker {
   content: "\2022   ";
 }
