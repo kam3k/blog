@@ -252,6 +252,12 @@ section:target iframe {
   visibility: visible;
 }
 
+#floated{
+  float: left;
+  width: 200px;
+  padding: 20px;
+}
+
 /* External links */
 
 a[href*="//"]:after { 
